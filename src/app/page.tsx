@@ -43,7 +43,7 @@ export default function DrivingQuizApp() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
-  const [aiAdvice, setAiAdvice] = useState<string>('');
+  // Removed unused state variable: const [aiAdvice, setAiAdvice] = useState<string>('');
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
   // const [quizStartTime, setQuizStartTime] = useState<Date | null>(null); // Removed unused variable
   
@@ -136,7 +136,7 @@ export default function DrivingQuizApp() {
       setShowExplanation(false);
       setTimeLeft(quizConfig.timeLimit);
       setIsAnswerCorrect(null);
-      setAiAdvice('');
+      // Removed setAiAdvice call as the state variable is no longer used
     } else {
       setStage('result');
     }
@@ -158,9 +158,12 @@ export default function DrivingQuizApp() {
     return 'Keep studying! Practice makes perfect.';
   };
 
-  // Handler for AI advice
+  // Handler for AI advice - currently not storing advice in state
+  // This is called by AITutor component but we're not using the advice elsewhere
   const handleAiAdvice = (advice: string) => {
-    setAiAdvice(advice);
+    // No-op - we're not using the advice in the parent component
+    // If needed in the future, we could store it in state or use it directly
+    console.log('Received advice from AI Tutor:', advice);
   };
 
   const currentQuestion = questions[currentQuestionIndex];

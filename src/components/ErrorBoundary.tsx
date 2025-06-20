@@ -1,17 +1,25 @@
 import React from 'react';
 
-export class ErrorBoundary extends React.Component {
-  constructor(props: any) {
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: any) {
+  static getDerivedStateFromError(_error: unknown): ErrorBoundaryState {
     return { hasError: true };
   }
 
   render() {
-    if ((this.state as any).hasError) {
+    if (this.state.hasError) {
       return (
         <div className="text-center p-8">
           <h2 className="text-xl font-bold text-red-600 mb-4">Something went wrong!</h2>
@@ -24,6 +32,6 @@ export class ErrorBoundary extends React.Component {
         </div>
       );
     }
-    return (this.props as any).children;
+    return this.props.children;
   }
 }

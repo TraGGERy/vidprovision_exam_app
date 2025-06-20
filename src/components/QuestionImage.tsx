@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
+import Image from 'next/image';
 
 interface QuestionImageProps {
   imageUrl: string;
@@ -36,9 +36,11 @@ const QuestionImage = ({ imageUrl, alt }: QuestionImageProps) => {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         )}
-        <img
+        <Image
           src={`/${imageUrl}`}
           alt={alt}
+          width={800}
+          height={600}
           className="rounded-lg shadow-md w-full h-auto max-h-64 object-contain"
           onLoad={() => setImageLoading(false)}
           onError={() => {

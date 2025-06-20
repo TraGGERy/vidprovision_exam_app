@@ -5,15 +5,7 @@ import QuestionImage from "../components/QuestionImage";
 import { Question, getAllQuestions, getQuestionsByTest, getAllTestIds, shuffle } from "../utils/questionUtils";
 
 // Legacy interface for backward compatibility
-interface LegacyQuestion {
-  id: number;
-  question: string;
-  options: string[];
-  answer: number;
-  image?: string;
-  image_url?: string;
-  explanation?: string;
-}
+// Removed unused interface
 
 // Legacy questions array (keeping for reference)
 

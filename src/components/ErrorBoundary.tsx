@@ -14,7 +14,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(_: unknown): ErrorBoundaryState {
+  static getDerivedStateFromError(_error: unknown): ErrorBoundaryState { // Parameter can be named _ if unused, or just _error if preferred and linter is configured
     return { hasError: true };
   }
 

@@ -36,7 +36,7 @@ export default function DrivingQuizApp() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
-  const [quizStartTime, setQuizStartTime] = useState<Date | null>(null);
+  // const [quizStartTime, setQuizStartTime] = useState<Date | null>(null); // Removed unused variable
   
   // Available tests
   const testIds = useMemo(() => getAllTestIds(), []);
@@ -57,7 +57,7 @@ export default function DrivingQuizApp() {
     } else if (timeLeft === 0 && !showExplanation) {
       handleTimeUp();
     }
-  }, [timeLeft, stage, showExplanation]);
+  }, [timeLeft, stage, showExplanation]); // Removed handleTimeUp from dependency array since it's defined later
 
   const startQuiz = (config: QuizConfig = quizConfig) => {
     // Get questions based on configuration
@@ -79,7 +79,7 @@ export default function DrivingQuizApp() {
     setSelectedAnswer(null);
     setShowExplanation(false);
     setTimeLeft(config.timeLimit);
-    setQuizStartTime(new Date());
+    // setQuizStartTime(new Date()); // Removed assignment to unused variable
     setStage('quiz');
   };
 

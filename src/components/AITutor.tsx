@@ -117,7 +117,7 @@ export default function AITutor({
     // Add Zimbabwe context for fallback responses if in Zimbabwe focus mode
     if (focusOnZimbabweLaws) {
       const zimbabweTip = MOCK_RESPONSES.zimbabweTips[Math.floor(Math.random() * MOCK_RESPONSES.zimbabweTips.length)];
-      mockAdvice += ` In Zimbabwe's driving context: ${zimbabweTip}`;
+      mockAdvice += ` In Zimbabwe&apos;s driving context: ${zimbabweTip}`;
     }
     
     // Only update and notify if the advice has changed
@@ -231,7 +231,7 @@ export default function AITutor({
         
         {focusOnZimbabweLaws && (
           <div className="mb-2 sm:mb-3 px-2 sm:px-3 py-1 sm:py-2 bg-green-900/50 border border-green-800 rounded text-xs text-green-100">
-            <p>Zimbabwe driving regulations are based on British laws with local adaptations. The advice below is tailored to Zimbabwe's driving context.</p>
+            <p>Zimbabwe driving regulations are based on British laws with local adaptations. The advice below is tailored to Zimbabwe&apos;s driving context.</p>
           </div>
         )}
         

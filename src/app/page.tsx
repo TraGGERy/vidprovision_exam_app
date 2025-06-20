@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import QuestionImage from "../components/QuestionImage";
+import AITutor from "../components/AITutor";
 import { Question, getAllQuestions, getQuestionsByTest, getAllTestIds, shuffle } from "../utils/questionUtils";
 
 // Legacy interface for backward compatibility
@@ -18,6 +19,9 @@ interface QuizConfig {
   testId?: string;
   questionCount: number;
   timeLimit: number; // in seconds
+  aiTutor: boolean;
+  gameMode: boolean;
+  characterName?: string;
 }
 
 export default function DrivingQuizApp() {
@@ -25,7 +29,10 @@ export default function DrivingQuizApp() {
   const [quizConfig, setQuizConfig] = useState<QuizConfig>({
     mode: 'random',
     questionCount: 20,
-    timeLimit: 30
+    timeLimit: 30,
+    aiTutor: true,
+    gameMode: true,
+    characterName: undefined
   });
   
   const [stage, setStage] = useState<'start' | 'quiz' | 'result'>('start');
@@ -36,6 +43,8 @@ export default function DrivingQuizApp() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
+  const [aiAdvice, setAiAdvice] = useState<string>('');
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
   // const [quizStartTime, setQuizStartTime] = useState<Date | null>(null); // Removed unused variable
   
   // Available tests
@@ -92,7 +101,10 @@ export default function DrivingQuizApp() {
     const newUserAnswers = [...userAnswers, option];
     setUserAnswers(newUserAnswers);
     
-    if (option === questions[currentQuestionIndex].correct_answer) {
+    const correct = option === questions[currentQuestionIndex].correct_answer;
+    setIsAnswerCorrect(correct);
+    
+    if (correct) {
       setScore(score + 1);
     }
   };
@@ -103,6 +115,7 @@ export default function DrivingQuizApp() {
       setSelectedAnswer(''); // Indicate no answer selected
       setUserAnswers([...userAnswers, '']);
       setShowExplanation(true);
+      setIsAnswerCorrect(false); // Time's up means incorrect answer
     }
   };
 
@@ -122,6 +135,8 @@ export default function DrivingQuizApp() {
       setSelectedAnswer(null);
       setShowExplanation(false);
       setTimeLeft(quizConfig.timeLimit);
+      setIsAnswerCorrect(null);
+      setAiAdvice('');
     } else {
       setStage('result');
     }
@@ -141,6 +156,11 @@ export default function DrivingQuizApp() {
     if (percentage >= 70) return 'Good work! Review the areas you missed.';
     if (percentage >= 60) return 'You\'re getting there! More study needed.';
     return 'Keep studying! Practice makes perfect.';
+  };
+
+  // Handler for AI advice
+  const handleAiAdvice = (advice: string) => {
+    setAiAdvice(advice);
   };
 
   const currentQuestion = questions[currentQuestionIndex];
@@ -220,6 +240,57 @@ export default function DrivingQuizApp() {
                   <option value={45}>45 Seconds</option>
                   <option value={60}>60 Seconds</option>
                 </select>
+              </div>
+
+              <div className="border-t border-gray-700 pt-4 mt-4">
+                <h3 className="text-lg font-medium text-blue-400 mb-3">🧠 AI Tutor Settings</h3>
+                
+                <div className="mb-3">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={quizConfig.aiTutor}
+                      onChange={(e) => setQuizConfig({...quizConfig, aiTutor: e.target.checked})}
+                      className="form-checkbox h-5 w-5 text-blue-500 rounded border-gray-700 bg-gray-800 focus:ring-blue-500"
+                    />
+                    <span className="text-gray-300">Enable AI Tutor</span>
+                  </label>
+                  <p className="text-xs text-gray-400 mt-1 ml-7">Get personalized advice and explanations from an AI tutor</p>
+                </div>
+
+                {quizConfig.aiTutor && (
+                  <>
+                    <div className="mb-3">
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={quizConfig.gameMode}
+                          onChange={(e) => setQuizConfig({...quizConfig, gameMode: e.target.checked})}
+                          className="form-checkbox h-5 w-5 text-blue-500 rounded border-gray-700 bg-gray-800 focus:ring-blue-500"
+                        />
+                        <span className="text-gray-300">Game Mode</span>
+                      </label>
+                      <p className="text-xs text-gray-400 mt-1 ml-7">Enable XP, levels, and character interactions</p>
+                    </div>
+
+                    {quizConfig.gameMode && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Select Tutor Character</label>
+                        <select
+                          className="w-full p-3 border border-gray-700 rounded-lg bg-gray-800 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          value={quizConfig.characterName || ''}
+                          onChange={(e) => setQuizConfig({...quizConfig, characterName: e.target.value || undefined})}
+                        >
+                          <option value="">Random Character</option>
+                          <option value="Professor Drive">🧠 Professor Drive</option>
+                          <option value="Captain Roadwise">🚗 Captain Roadwise</option>
+                          <option value="Safety Sally">🛡️ Safety Sally</option>
+                          <option value="Mechanic Mike">🔧 Mechanic Mike</option>
+                        </select>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
             
@@ -325,9 +396,21 @@ export default function DrivingQuizApp() {
               </div>
             )}
 
+            {/* AI Tutor */}
+            {quizConfig.aiTutor && showExplanation && (
+              <AITutor
+                currentQuestion={currentQuestion}
+                userAnswer={selectedAnswer}
+                isCorrect={isAnswerCorrect}
+                onAdvice={handleAiAdvice}
+                gameMode={quizConfig.gameMode}
+                characterName={quizConfig.characterName}
+              />
+            )}
+
             {/* Next Button */}
             {showExplanation && (
-              <div className="text-center">
+              <div className="text-center mt-4">
                 <button
                   onClick={nextQuestion}
                   className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 touch-manipulation text-sm sm:text-base border border-blue-500"

@@ -57,7 +57,7 @@ export default function DrivingQuizApp() {
     } else if (timeLeft === 0 && !showExplanation) {
       handleTimeUp();
     }
-  }, [timeLeft, stage, showExplanation]); // Removed handleTimeUp from dependency array since it's defined later
+  }, [timeLeft, stage, showExplanation]);
 
   const startQuiz = (config: QuizConfig = quizConfig) => {
     // Get questions based on configuration

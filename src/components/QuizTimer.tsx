@@ -3,7 +3,7 @@ interface QuizTimerProps {
   isActive: boolean;
 }
 
-export const QuizTimer: React.FC<QuizTimerProps> = ({ timeLeft, isActive }) => {
+export const QuizTimer: React.FC<QuizTimerProps> = ({ timeLeft }) => {
   return (
     <div className="mb-4 sm:mb-6 text-center">
       <div className={`inline-flex items-center px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium ${

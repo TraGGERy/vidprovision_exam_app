@@ -74,6 +74,20 @@ Questions are stored in the `questions.json` file. Each question follows this fo
 }
 ```
 
+## SEO Features
+
+This application includes comprehensive SEO optimizations:
+
+- **Metadata**: Rich meta tags including title, description, keywords, and Open Graph tags
+- **Structured Data**: JSON-LD structured data for both mobile and web applications
+- **PWA Support**: Full Progressive Web App support with offline capabilities
+- **Dynamic Sitemap**: Automatically generated sitemap.xml for better search engine indexing
+- **Robots.txt**: Properly configured robots.txt file
+- **Semantic HTML**: Proper use of HTML5 semantic elements
+- **Canonical URLs**: Prevents duplicate content issues
+- **Mobile Optimization**: Fully responsive design with appropriate viewport settings
+- **Performance**: Optimized for Core Web Vitals
+
 ## License
 
 This project is licensed under the MIT License.

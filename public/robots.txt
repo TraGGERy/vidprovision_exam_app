@@ -1,0 +1,7 @@
+# Allow all web crawlers
+User-agent: *
+Allow: /
+
+# Sitemap locations
+Sitemap: https://vidapp.vercel.app/sitemap.xml
+Sitemap: https://vidapp.vercel.app/api/sitemap

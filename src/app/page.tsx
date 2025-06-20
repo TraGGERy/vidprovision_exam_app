@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
+import { registerServiceWorker } from "../utils/registerSW";
 import QuestionImage from "../components/QuestionImage";
 import AITutor from "../components/AITutor";
+import SplashScreen from "../components/SplashScreen";
 import { Question, getAllQuestions, getQuestionsByTest, getAllTestIds, shuffle } from "../utils/questionUtils";
 
 // Legacy interface for backward compatibility
@@ -28,6 +30,19 @@ interface QuizConfig {
 }
 
 export default function DrivingQuizApp() {
+  // Register service worker for PWA functionality
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
+
+  // Hide splash screen after delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Quiz configuration
   const [quizConfig, setQuizConfig] = useState<QuizConfig>({
     mode: 'random',
@@ -42,6 +57,7 @@ export default function DrivingQuizApp() {
   });
   
   const [stage, setStage] = useState<'start' | 'quiz' | 'result'>('start');
+  const [showSplash, setShowSplash] = useState(true);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -181,6 +197,7 @@ export default function DrivingQuizApp() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
+      {showSplash && <SplashScreen />}
       <div className="container mx-auto py-4 sm:py-8 px-3 sm:px-4 max-w-4xl">
         <div className="text-center mb-4 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">🚗 Driving License Quiz</h1>

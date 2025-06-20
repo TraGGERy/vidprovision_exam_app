@@ -15,25 +15,25 @@ interface AITutorProps {
 }
 
 const AI_CHARACTERS = [
-  { name: 'Professor Drive', emoji: '🧠', style: 'academic', intro: 'Greetings, student! I\'m Professor Drive, your academic driving instructor.' },
-  { name: 'Captain Roadwise', emoji: '🚗', style: 'enthusiastic', intro: 'Hey there! Captain Roadwise at your service! Let\'s conquer these roads together!' },
-  { name: 'Safety Sally', emoji: '🛡️', style: 'cautious', intro: 'Hi! I\'m Safety Sally. Remember, it\'s better to be safe than sorry on the roads.' },
-  { name: 'Mechanic Mike', emoji: '🔧', style: 'technical', intro: 'G\'day! Mechanic Mike here. I know the rules of the road AND how your vehicle works.' }
+  { name: 'Professor Drive', emoji: '🧠', style: 'academic', intro: 'Greetings, student! I&apos;m Professor Drive, your academic driving instructor.' },
+  { name: 'Captain Roadwise', emoji: '🚗', style: 'enthusiastic', intro: 'Hey there! Captain Roadwise at your service! Let&apos;s conquer these roads together!' },
+  { name: 'Safety Sally', emoji: '🛡️', style: 'cautious', intro: 'Hi! I&apos;m Safety Sally. Remember, it&apos;s better to be safe than sorry on the roads.' },
+  { name: 'Mechanic Mike', emoji: '🔧', style: 'technical', intro: 'G&apos;day! Mechanic Mike here. I know the rules of the road AND how your vehicle works.' }
 ];
 
 // Mock responses for when OpenAI is not available
 const MOCK_RESPONSES = {
   correct: [
-    "Great job! You've got this one right. Let me explain why this answer is correct...",
-    "Excellent choice! That's the correct answer because...",
+    "Great job! You&apos;ve got this one right. Let me explain why this answer is correct...",
+    "Excellent choice! That&apos;s the correct answer because...",
     "Perfect! You selected the right option. This is important because...",
-    "You're right! Good understanding of the driving rules here."
+    "You&apos;re right! Good understanding of the driving rules here."
   ],
   incorrect: [
     "Not quite right. Let me explain why the correct answer is important...",
-    "That's not the correct choice. Here's what you need to understand about this situation...",
+    "That&apos;s not the correct choice. Here&apos;s what you need to understand about this situation...",
     "I see where you might have been confused. The correct answer is actually... because...",
-    "Let's review this one together. The right answer is... and here's why..."
+    "Let&apos;s review this one together. The right answer is... and here&apos;s why..."
   ],
   tips: [
     "Remember to always check your mirrors before changing lanes.",
@@ -43,15 +43,15 @@ const MOCK_RESPONSES = {
     "Always signal your intentions to other road users."
   ],
   zimbabweTips: [
-    "In Zimbabwe, always carry your driver's license, vehicle registration, and insurance documents while driving.",
+    "In Zimbabwe, always carry your driver&apos;s license, vehicle registration, and insurance documents while driving.",
     "Zimbabwe follows left-hand driving similar to the UK, so keep to the left side of the road.",
     "The speed limit in urban areas in Zimbabwe is typically 60 km/h unless otherwise posted.",
     "In Zimbabwe, seat belts are mandatory for all vehicle occupants, both in the front and rear seats.",
     "Be cautious of wildlife on rural roads in Zimbabwe, especially at dawn and dusk.",
     "Zimbabwe has strict laws against drunk driving with a legal blood alcohol limit of 0.08%.",
     "When approaching a roundabout in Zimbabwe, give way to vehicles already on the roundabout.",
-    "In Zimbabwe, it's illegal to use a mobile phone while driving unless using a hands-free system.",
-    "Zimbabwe's Highway Code requires drivers to stop completely at stop signs and red traffic lights.",
+    "In Zimbabwe, it&apos;s illegal to use a mobile phone while driving unless using a hands-free system.",
+    "Zimbabwe&apos;s Highway Code requires drivers to stop completely at stop signs and red traffic lights.",
     "During the rainy season in Zimbabwe (November to March), be extra cautious of slippery roads and reduced visibility."
   ]
 };

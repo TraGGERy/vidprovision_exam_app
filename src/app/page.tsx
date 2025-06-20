@@ -57,7 +57,7 @@ export default function DrivingQuizApp() {
     } else if (timeLeft === 0 && !showExplanation) {
       handleTimeUp();
     }
-  }, [timeLeft, stage, showExplanation]);
+  }, [timeLeft, stage, showExplanation,]);
 
   const startQuiz = (config: QuizConfig = quizConfig) => {
     // Get questions based on configuration
@@ -97,6 +97,7 @@ export default function DrivingQuizApp() {
     }
   };
 
+  // Define handleTimeUp before the useEffect that uses it
   const handleTimeUp = () => {
     if (selectedAnswer === null) {
       setSelectedAnswer(''); // Indicate no answer selected
@@ -104,6 +105,16 @@ export default function DrivingQuizApp() {
       setShowExplanation(true);
     }
   };
+
+  // Timer effect
+  useEffect(() => {
+    if (stage === 'quiz' && timeLeft > 0 && !showExplanation) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (timeLeft === 0 && !showExplanation) {
+      handleTimeUp();
+    }
+  }, [timeLeft, stage, showExplanation, handleTimeUp]);
 
   const nextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {

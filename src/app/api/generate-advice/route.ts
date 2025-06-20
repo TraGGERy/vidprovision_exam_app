@@ -8,7 +8,16 @@ const openai = new OpenAI({
 
 export async function POST(request: NextRequest) {
   try {
-    const { question, options, correctAnswer, userAnswer, isCorrect, characterStyle } = await request.json();
+    const { 
+      question, 
+      options, 
+      correctAnswer, 
+      userAnswer, 
+      isCorrect, 
+      characterStyle,
+      showDetailedExplanations = false,
+      focusOnZimbabweLaws = false
+    } = await request.json();
 
     // Validate required fields
     if (!question || !options || !correctAnswer || userAnswer === undefined || isCorrect === undefined) {
@@ -30,11 +39,23 @@ export async function POST(request: NextRequest) {
     const characterPrompt = characterPrompts[characterStyle as keyof typeof characterPrompts] || characterPrompts.academic;
 
     // Create the system message
-    const systemMessage = `${characterPrompt}
-
-You are helping a student prepare for their driving license exam. Respond in a concise, helpful manner (maximum 3-4 sentences). 
-
-${isCorrect ? 'The student answered correctly, but still needs to understand WHY this is the correct answer.' : 'The student answered incorrectly. Explain why their answer was wrong and why the correct answer is important.'}`;
+    let systemMessage = `${characterPrompt}\n\n`;
+    
+    // Add Zimbabwe-specific context if requested
+    if (focusOnZimbabweLaws) {
+      systemMessage += `You are helping a student prepare for their Zimbabwe driving license exam. Zimbabwe driving laws are similar to British driving regulations with some local adaptations. Include specific references to Zimbabwe driving regulations where applicable.\n\n`;
+    } else {
+      systemMessage += `You are helping a student prepare for their driving license exam.\n\n`;
+    }
+    
+    // Adjust response length based on detailed explanations setting
+    if (showDetailedExplanations) {
+      systemMessage += `Provide a comprehensive explanation (5-8 sentences) that covers the rule in detail, its safety implications, and practical application.\n\n`;
+    } else {
+      systemMessage += `Respond in a concise, helpful manner (maximum 3-4 sentences).\n\n`;
+    }
+    
+    systemMessage += `${isCorrect ? 'The student answered correctly, but still needs to understand WHY this is the correct answer.' : 'The student answered incorrectly. Explain why their answer was wrong and why the correct answer is important.'}`;
 
     // Create the user message with question details
     const userMessage = `Question: ${question}
@@ -51,7 +72,7 @@ Please provide a helpful explanation about this driving rule or situation.`;
         { role: "system", content: systemMessage },
         { role: "user", content: userMessage }
       ],
-      max_tokens: 150,
+      max_tokens: showDetailedExplanations ? 300 : 150, // More tokens for detailed explanations
       temperature: 0.7,
     });
 

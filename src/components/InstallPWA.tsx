@@ -64,6 +64,10 @@ export default function InstallPWA() {
     setShowIOSInstructions(!showIOSInstructions);
   };
 
+  const handleClosePrompt = () => {
+    setShowInstallPrompt(false);
+  };
+
   // Don't show anything if the app is already installed or user dismissed the prompt
   if (isInstalled || !showInstallPrompt) {
     return null;
@@ -96,8 +100,8 @@ export default function InstallPWA() {
             <span className="font-medium">Install on iPhone</span>
           </button>
           <button 
-            onClick={() => setShowInstallPrompt(false)}
-            className="ml-3 p-1 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors"
+            onClick={handleClosePrompt}
+            className="ml-3 p-1.5 rounded-full bg-gray-200/70 dark:bg-gray-700/70 hover:bg-gray-300/80 dark:hover:bg-gray-600/80 transition-colors"
             aria-label="Dismiss install prompt"
           >
             <svg 
@@ -107,7 +111,7 @@ export default function InstallPWA() {
               viewBox="0 0 24 24" 
               fill="none" 
               stroke="currentColor" 
-              strokeWidth="2" 
+              strokeWidth="2.5" 
               strokeLinecap="round" 
               strokeLinejoin="round"
             >
@@ -119,7 +123,27 @@ export default function InstallPWA() {
         
         {showIOSInstructions && (
           <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 md:p-6 animate-fadeIn">
-            <div className="bg-white/95 dark:bg-gray-800/95 rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-gray-200/50 dark:border-gray-700/50 animate-scaleIn">
+            <div className="bg-white/95 dark:bg-gray-800/95 rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-gray-200/50 dark:border-gray-700/50 animate-scaleIn relative">
+              <button 
+                onClick={toggleIOSInstructions}
+                className="absolute top-3 right-3 p-1.5 rounded-full bg-gray-200/70 dark:bg-gray-700/70 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                aria-label="Close instructions"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="16" 
+                  height="16" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2.5" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
               <h3 className="text-lg md:text-xl font-medium mb-4 md:mb-5 bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent">Install on iPhone/iPad</h3>
               <ol className="list-decimal pl-5 space-y-3 mb-5 md:mb-6 text-gray-700 dark:text-gray-300 text-sm md:text-base">
                 <li>Tap the <span className="font-medium text-gray-900 dark:text-white">Share</span> button in Safari <span className="inline-block ml-1">📤</span></li>
@@ -168,8 +192,8 @@ export default function InstallPWA() {
             <span className="font-medium">Install App</span>
           </button>
           <button 
-            onClick={() => setShowInstallPrompt(false)}
-            className="ml-3 p-1 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors"
+            onClick={handleClosePrompt}
+            className="ml-3 p-1.5 rounded-full bg-gray-200/70 dark:bg-gray-700/70 hover:bg-gray-300/80 dark:hover:bg-gray-600/80 transition-colors"
             aria-label="Dismiss install prompt"
           >
             <svg 
@@ -179,7 +203,7 @@ export default function InstallPWA() {
               viewBox="0 0 24 24" 
               fill="none" 
               stroke="currentColor" 
-              strokeWidth="2" 
+              strokeWidth="2.5" 
               strokeLinecap="round" 
               strokeLinejoin="round"
             >

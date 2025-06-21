@@ -18,16 +18,25 @@ export default function InstallPWA() {
   const [isInstalled, setIsInstalled] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
 
+  // Define interfaces for Safari and IE specific properties
+  interface SafariNavigator extends Navigator {
+    standalone?: boolean;
+  }
+  
+  interface IEWindow extends Window {
+    MSStream?: unknown;
+  }
+
   useEffect(() => {
     // Check if the app is already installed
     if (window.matchMedia('(display-mode: standalone)').matches || 
-        (window.navigator as any).standalone === true) {
+        (window.navigator as SafariNavigator).standalone === true) {
       setIsInstalled(true);
       return;
     }
 
     // Check if device is iOS
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as IEWindow).MSStream;
     setIsIOS(isIOSDevice);
 
     // Handle Android install prompt

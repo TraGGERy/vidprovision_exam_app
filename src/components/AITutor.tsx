@@ -215,42 +215,51 @@ export default function AITutor({
   }, [showTip]);
 
   if (!gameMode) {
-    // Simple non-game mode UI or Study Mode UI
+    // Simple non-game mode UI or Study Mode UI with Apple-inspired design
     return (
-      <div className={`mt-3 sm:mt-4 p-3 sm:p-4 rounded-lg border ${focusOnZimbabweLaws ? 'bg-green-900/30 border-green-700' : 'bg-gray-800 border-gray-700'}`}>
-        <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">
+      <div className={`mt-4 md:mt-6 p-4 md:p-5 rounded-2xl backdrop-blur-sm shadow-lg transition-all duration-300 ${focusOnZimbabweLaws 
+        ? 'bg-green-900/20 dark:bg-green-900/30 border border-green-700/30 dark:border-green-700/50' 
+        : 'bg-gray-200/90 dark:bg-gray-800/90 border border-gray-300/30 dark:border-gray-700/30'}`}>
+        <h3 className="text-base md:text-lg font-medium text-gray-800 dark:text-white mb-2 md:mb-3">
           {focusOnZimbabweLaws ? (
             <span className="flex items-center">
-              <span className="mr-2">🇿🇼</span>
-              Zimbabwe Driving Insights
+              <span className="mr-2 text-lg md:text-xl">🇿🇼</span>
+              <span className="bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent font-semibold">Zimbabwe Driving Insights</span>
             </span>
           ) : (
-            'AI Tutor Advice'
+            <span className="bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent font-semibold">AI Tutor Advice</span>
           )}
         </h3>
         
         {focusOnZimbabweLaws && (
-          <div className="mb-2 sm:mb-3 px-2 sm:px-3 py-1 sm:py-2 bg-green-900/50 border border-green-800 rounded text-xs text-green-100">
+          <div className="mb-3 md:mb-4 px-3 md:px-4 py-2 md:py-3 bg-green-900/20 dark:bg-green-900/40 border border-green-800/30 dark:border-green-800/50 rounded-xl text-xs md:text-sm text-green-900 dark:text-green-100">
             <p>Zimbabwe driving regulations are based on British laws with local adaptations. The advice below is tailored to Zimbabwe&apos;s driving context.</p>
           </div>
         )}
         
         {isLoading ? (
-          <div className="flex items-center justify-center py-3 sm:py-4">
-            <div className={`animate-spin rounded-full h-5 sm:h-6 w-5 sm:w-6 border-b-2 ${focusOnZimbabweLaws ? 'border-green-500' : 'border-blue-500'}`}></div>
-            <span className="ml-2 text-gray-300 text-xs sm:text-sm">Analyzing your answer...</span>
+          <div className="flex items-center justify-center py-4 md:py-6">
+            <div className="relative">
+              <div className={`animate-spin rounded-full h-6 md:h-8 w-6 md:w-8 border-2 border-t-transparent ${focusOnZimbabweLaws ? 'border-green-500' : 'border-blue-500'}`}></div>
+              <div className={`absolute inset-0 flex items-center justify-center ${focusOnZimbabweLaws ? 'text-green-500' : 'text-blue-500'}`}>
+                <span className="text-xs">AI</span>
+              </div>
+            </div>
+            <span className="ml-3 text-gray-600 dark:text-gray-300 text-sm md:text-base font-light">Analyzing your answer...</span>
           </div>
         ) : (
-          <div>
-            <p className={`text-xs sm:text-sm leading-relaxed ${focusOnZimbabweLaws ? 'text-green-100' : 'text-gray-300'}`}>{advice}</p>
+          <div className="transition-all duration-300 ease-in-out">
+            <p className={`text-sm md:text-base leading-relaxed ${focusOnZimbabweLaws 
+              ? 'text-green-900 dark:text-green-100' 
+              : 'text-gray-700 dark:text-gray-300'}`}>{advice}</p>
             
             {showDetailedExplanations && (
-              <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-green-800/50">
+              <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-green-800/20 dark:border-green-800/30">
                 <button 
                   onClick={showRandomTip}
-                  className="text-xs px-2 py-1 bg-green-800 text-green-100 rounded hover:bg-green-700 transition-colors flex items-center"
+                  className="text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-full hover:shadow-md hover:from-green-500 hover:to-emerald-600 transition-all duration-300 flex items-center"
                 >
-                  <span className="mr-1">🚗</span> Zimbabwe Driving Tip
+                  <span className="mr-1.5">🚗</span> Zimbabwe Driving Tip
                 </button>
               </div>
             )}
@@ -260,66 +269,85 @@ export default function AITutor({
     );
   }
 
-  // Game mode UI with character, XP, level, etc.
+  // Game mode UI with character, XP, level, etc. - Apple-inspired design
   return (
-    <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-800 rounded-lg border border-gray-700 relative overflow-hidden">
-      {/* Game elements */}
-      <div className="absolute top-1 sm:top-2 right-1 sm:right-2 flex space-x-1 sm:space-x-2">
-        <span className="px-1 sm:px-2 py-0.5 sm:py-1 bg-purple-900 text-purple-100 text-xs rounded-md">
+    <div className="mt-4 md:mt-6 p-4 md:p-5 bg-gray-200/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl border border-gray-300/30 dark:border-gray-700/30 shadow-lg relative overflow-hidden transition-all duration-300">
+      {/* Game elements with Apple-inspired design */}
+      <div className="absolute top-2 md:top-3 right-2 md:right-3 flex space-x-1.5 md:space-x-2.5">
+        <span className="px-2 md:px-3 py-1 md:py-1.5 bg-gradient-to-r from-purple-600 to-indigo-700 text-white text-xs md:text-sm rounded-full shadow-sm">
           Level {level}
         </span>
-        <span className="px-1 sm:px-2 py-0.5 sm:py-1 bg-yellow-900 text-yellow-100 text-xs rounded-md">
+        <span className="px-2 md:px-3 py-1 md:py-1.5 bg-gradient-to-r from-amber-500 to-yellow-600 text-white text-xs md:text-sm rounded-full shadow-sm">
           XP: {xp}
         </span>
         {streak > 2 && (
-          <span className="px-1 sm:px-2 py-0.5 sm:py-1 bg-red-900 text-red-100 text-xs rounded-md animate-pulse">
+          <span className="px-2 md:px-3 py-1 md:py-1.5 bg-gradient-to-r from-red-500 to-rose-600 text-white text-xs md:text-sm rounded-full shadow-sm animate-pulse">
             🔥 {streak}
           </span>
         )}
       </div>
       
-      {/* Character section */}
-      <div className="flex items-start mb-2 sm:mb-3 mt-6 sm:mt-4">
-        <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-900 flex items-center justify-center text-base sm:text-xl">
+      {/* Character section with Apple-inspired design */}
+      <div className="flex items-start mb-3 md:mb-4 mt-10 md:mt-12">
+        <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md flex items-center justify-center text-lg md:text-xl">
           {character.emoji}
         </div>
-        <div className="ml-2 sm:ml-3 flex-1">
-          <h3 className="text-sm sm:text-md font-semibold text-white">{character.name}</h3>
+        <div className="ml-3 md:ml-4 flex-1">
+          <h3 className="text-sm md:text-base font-medium text-gray-800 dark:text-white">
+            <span className="bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent font-semibold">
+              {character.name}
+            </span>
+          </h3>
           {isLoading ? (
-            <div className="flex items-center mt-1 sm:mt-2">
-              <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-blue-500"></div>
-              <span className="ml-2 text-gray-300 text-xs sm:text-sm">Thinking...</span>
+            <div className="flex items-center mt-2 md:mt-3">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-5 w-5 md:h-6 md:w-6 border-2 border-t-transparent border-blue-500"></div>
+                <div className="absolute inset-0 flex items-center justify-center text-blue-500">
+                  <span className="text-[8px] md:text-[10px]">AI</span>
+                </div>
+              </div>
+              <span className="ml-2 text-gray-600 dark:text-gray-300 text-xs md:text-sm font-light">Thinking...</span>
             </div>
           ) : (
-            <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">{advice}</p>
+            <p className="text-gray-700 dark:text-gray-300 text-sm md:text-base leading-relaxed mt-1 md:mt-2">{advice}</p>
           )}
         </div>
       </div>
       
-      {/* Tip button */}
-      <div className="mt-2 sm:mt-3 flex justify-end">
+      {/* Tip button with Apple-inspired design */}
+      <div className="mt-3 md:mt-4 flex justify-end">
         <button 
           onClick={showRandomTip}
-          className="text-xs px-2 py-0.5 sm:py-1 bg-blue-900 text-blue-100 rounded hover:bg-blue-800 transition-colors"
+          className="text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-full hover:shadow-md hover:from-blue-500 hover:to-indigo-600 transition-all duration-300 flex items-center"
         >
-          💡 Driving Tip
+          <span className="mr-1.5">💡</span> Driving Tip
         </button>
       </div>
       
-      {/* Tip popup */}
+      {/* Tip popup with Apple-inspired design */}
       {showTip && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+        <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 md:p-6 transition-all duration-300 animate-fadeIn">
           <div 
-            className={`bg-gray-800 rounded-lg p-4 sm:p-6 max-w-md w-full border-2 ${focusOnZimbabweLaws ? 'border-yellow-600' : 'border-blue-600'}`}
+            className={`bg-white/90 dark:bg-gray-800/95 rounded-2xl p-5 md:p-6 max-w-md w-full shadow-2xl border ${focusOnZimbabweLaws ? 'border-yellow-400/30 dark:border-yellow-600/30' : 'border-blue-400/30 dark:border-blue-600/30'} transform transition-all duration-300 animate-scaleIn`}
           >
-            <h3 className={`text-base sm:text-lg font-bold mb-1 sm:mb-2 ${focusOnZimbabweLaws ? 'text-yellow-400' : 'text-blue-400'}`}>
-              {focusOnZimbabweLaws ? '🇿🇼 Zimbabwe Driving Insight' : '💡 Driving Tip'}
+            <h3 className={`text-base md:text-lg font-medium mb-2 md:mb-3 ${focusOnZimbabweLaws ? 'bg-gradient-to-r from-amber-500 to-yellow-600' : 'bg-gradient-to-r from-blue-500 to-indigo-600'} bg-clip-text text-transparent`}>
+              {focusOnZimbabweLaws ? (
+                <span className="flex items-center">
+                  <span className="mr-2 text-lg md:text-xl">🇿🇼</span>
+                  Zimbabwe Driving Insight
+                </span>
+              ) : (
+                <span className="flex items-center">
+                  <span className="mr-2 text-lg md:text-xl">💡</span>
+                  Driving Tip
+                </span>
+              )}
             </h3>
-            <p className="text-sm sm:text-base text-gray-300 mb-3 sm:mb-4">{tipText}</p>
+            <p className="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4 md:mb-5 leading-relaxed">{tipText}</p>
             <div className="flex justify-end">
               <button 
                 onClick={() => setShowTip(false)}
-                className="px-3 sm:px-4 py-1 sm:py-2 text-sm bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors"
+                className="px-4 md:px-5 py-2 md:py-2.5 text-sm md:text-base bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300 shadow-sm"
               >
                 Close
               </button>

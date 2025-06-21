@@ -3,6 +3,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-color-dark: rgba(0, 0, 0, 0.2);
+  --highlight-color: rgba(255, 255, 255, 0.8);
+  --highlight-color-dark: rgba(255, 255, 255, 0.1);
 }
 
 @theme inline {
@@ -16,11 +20,67 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-color-dark: rgba(0, 0, 0, 0.5);
+    --highlight-color: rgba(255, 255, 255, 0.1);
+    --highlight-color-dark: rgba(255, 255, 255, 0.05);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+}
+
+/* Apple-inspired animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+.animate-pulse {
+  animation: pulse 1.5s infinite;
+}
+
+/* Apple-inspired glass morphism */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--highlight-color);
+  box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+.dark .glass-morphism {
+  background: rgba(30, 30, 30, 0.7);
+  border: 1px solid var(--highlight-color-dark);
+  box-shadow: 0 4px 15px var(--shadow-color-dark);
 }

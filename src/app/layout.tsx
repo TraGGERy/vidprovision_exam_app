@@ -86,54 +86,58 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/icons/icon-192x192.svg" />
         <link rel="canonical" href="https://vidapp.vercel.app" />
         <script type="application/ld+json">
-          {
-            "@context": "https://schema.org",
-            "@type": "MobileApplication",
-            "name": "VidApp - Zimbabwe Driving License Test Preparation",
-            "operatingSystem": "Android, iOS",
-            "applicationCategory": "EducationalApplication",
-            "offers": {
-              "@type": "Offer",
-              "price": "0",
-              "priceCurrency": "USD"
-            },
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "4.8",
-              "ratingCount": "120"
-            },
-            "description": "Prepare for your Zimbabwe driving license test with our comprehensive quiz app featuring practice tests, study mode, and AI tutor assistance.",
-            "screenshot": "https://vidapp.vercel.app/screenshots/screenshot1.png",
-            "softwareVersion": "1.0.0",
-            "author": {
-              "@type": "Organization",
-              "name": "VidApp Team",
-              "url": "https://vidapp.vercel.app"
-            },
-            "potentialAction": {
-              "@type": "UseAction",
-              "target": "https://vidapp.vercel.app"
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "MobileApplication",
+              "name": "VidApp - Zimbabwe Driving License Test Preparation",
+              "operatingSystem": "Android, iOS",
+              "applicationCategory": "EducationalApplication",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.8",
+                "ratingCount": "120"
+              },
+              "description": "Prepare for your Zimbabwe driving license test with our comprehensive quiz app featuring practice tests, study mode, and AI tutor assistance.",
+              "screenshot": "https://vidapp.vercel.app/screenshots/screenshot1.png",
+              "softwareVersion": "1.0.0",
+              "author": {
+                "@type": "Organization",
+                "name": "VidApp Team",
+                "url": "https://vidapp.vercel.app"
+              },
+              "potentialAction": {
+                "@type": "UseAction",
+                "target": "https://vidapp.vercel.app"
+              }
             }
-          }
+          `}
         </script>
         <script type="application/ld+json">
-          {
-            "@context": "https://schema.org",
-            "@type": "WebApplication",
-            "name": "VidApp - Zimbabwe Driving License Test Preparation",
-            "url": "https://vidapp.vercel.app",
-            "applicationCategory": "EducationApplication",
-            "genre": "education",
-            "browserRequirements": "Requires JavaScript. Requires HTML5.",
-            "softwareVersion": "1.0",
-            "operatingSystem": "All",
-            "offers": {
-              "@type": "Offer",
-              "price": "0",
-              "priceCurrency": "USD"
-            },
-            "description": "Prepare for your Zimbabwe driving license test with our comprehensive quiz app featuring practice tests, study mode, and AI tutor assistance."
-          }
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "VidApp - Zimbabwe Driving License Test Preparation",
+              "url": "https://vidapp.vercel.app",
+              "applicationCategory": "EducationApplication",
+              "genre": "education",
+              "browserRequirements": "Requires JavaScript. Requires HTML5.",
+              "softwareVersion": "1.0",
+              "operatingSystem": "All",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "description": "Prepare for your Zimbabwe driving license test with our comprehensive quiz app featuring practice tests, study mode, and AI tutor assistance."
+            }
+          `}
         </script>
       </head>
       <body

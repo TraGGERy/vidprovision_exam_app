@@ -17,6 +17,7 @@ export default function InstallPWA() {
   const [isIOS, setIsIOS] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(true);
 
   // Define interfaces for Safari and IE specific properties
   interface SafariNavigator extends Navigator {
@@ -63,8 +64,8 @@ export default function InstallPWA() {
     setShowIOSInstructions(!showIOSInstructions);
   };
 
-  // Don't show anything if the app is already installed
-  if (isInstalled) {
+  // Don't show anything if the app is already installed or user dismissed the prompt
+  if (isInstalled || !showInstallPrompt) {
     return null;
   }
 
@@ -72,27 +73,49 @@ export default function InstallPWA() {
   if (isIOS) {
     return (
       <div className="fixed bottom-6 md:bottom-8 left-0 right-0 mx-auto w-max z-50 animate-slideUp">
-        <button
-          className="glass-morphism text-gray-800 dark:text-white px-4 py-2.5 md:px-5 md:py-3 rounded-full shadow-lg flex items-center space-x-2 hover:shadow-xl transition-all duration-300"
-          onClick={toggleIOSInstructions}
-        >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="20" 
-            height="20" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-            className="text-blue-500"
+        <div className="relative glass-morphism text-gray-800 dark:text-white px-4 py-2.5 md:px-5 md:py-3 rounded-full shadow-lg flex items-center space-x-2 hover:shadow-xl transition-all duration-300">
+          <button
+            className="flex items-center space-x-2"
+            onClick={toggleIOSInstructions}
           >
-            <path d="M12 2v8m0 0l-4-4m4 4l4-4" />
-            <path d="M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17" />
-          </svg>
-          <span className="font-medium">Install on iPhone</span>
-        </button>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+              className="text-blue-500"
+            >
+              <path d="M12 2v8m0 0l-4-4m4 4l4-4" />
+              <path d="M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17" />
+            </svg>
+            <span className="font-medium">Install on iPhone</span>
+          </button>
+          <button 
+            onClick={() => setShowInstallPrompt(false)}
+            className="ml-3 p-1 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors"
+            aria-label="Dismiss install prompt"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="16" 
+              height="16" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
         
         {showIOSInstructions && (
           <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 md:p-6 animate-fadeIn">
@@ -122,27 +145,49 @@ export default function InstallPWA() {
   if (supportsPWA) {
     return (
       <div className="fixed bottom-6 md:bottom-8 left-0 right-0 mx-auto w-max z-50 animate-slideUp">
-        <button
-          className="glass-morphism text-gray-800 dark:text-white px-4 py-2.5 md:px-5 md:py-3 rounded-full shadow-lg flex items-center space-x-2 hover:shadow-xl transition-all duration-300"
-          onClick={onClick}
-        >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="20" 
-            height="20" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-            className="text-blue-500"
+        <div className="relative glass-morphism text-gray-800 dark:text-white px-4 py-2.5 md:px-5 md:py-3 rounded-full shadow-lg flex items-center space-x-2 hover:shadow-xl transition-all duration-300">
+          <button
+            className="flex items-center space-x-2"
+            onClick={onClick}
           >
-            <path d="M12 2v8m0 0l-4-4m4 4l4-4" />
-            <path d="M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17" />
-          </svg>
-          <span className="font-medium">Install App</span>
-        </button>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+              className="text-blue-500"
+            >
+              <path d="M12 2v8m0 0l-4-4m4 4l4-4" />
+              <path d="M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17" />
+            </svg>
+            <span className="font-medium">Install App</span>
+          </button>
+          <button 
+            onClick={() => setShowInstallPrompt(false)}
+            className="ml-3 p-1 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors"
+            aria-label="Dismiss install prompt"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="16" 
+              height="16" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
       </div>
     );
   }

@@ -2,10 +2,11 @@
 
 import React, { useMemo } from 'react';
 import { generateLeaderboard } from '../utils/leaderboardUtils';
+import { Question } from '../utils/questionUtils';
 
 interface LeaderboardTableProps {
   score: number;
-  questions: any[];
+  questions: Question[];
   limit?: number;
 }
 

@@ -114,7 +114,7 @@ export default function DrivingQuizApp() {
       }
     } else if (config.mode === 'by-test' && config.testId) {
       // Get questions from specific test
-      let testQuestions = getQuestionsByTest(config.testId);
+      const testQuestions = getQuestionsByTest(config.testId);
       
       // Apply spaced repetition if enabled
       if (config.enableSpacedRepetition && config.prioritizeDifficultQuestions) {

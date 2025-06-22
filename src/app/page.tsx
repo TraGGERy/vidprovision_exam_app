@@ -11,9 +11,8 @@ import {
   updateQuestionPerformance, 
   getQuestionsForReview, 
   getDifficultyDescription,
-  getProgressStats
 } from "../utils/spacedRepetition";
-import { generateLeaderboard, LeaderboardUser } from "../utils/leaderboardUtils";
+
 
 // Legacy interface for backward compatibility
 // Removed unused interface
@@ -685,7 +684,7 @@ export default function DrivingQuizApp() {
               </div>
             )}
           </div>
-        ), [currentQuestion, currentQuestionIndex, questions.length, score, showExplanation, timeLeft, selectedAnswer, isAnswerCorrect, quizConfig, handleAnswerSelect, nextQuestion, getDifficultyDescription])}
+        ), [currentQuestion, currentQuestionIndex, questions.length, score, showExplanation, timeLeft, selectedAnswer, isAnswerCorrect, quizConfig, handleAnswerSelect, nextQuestion])}
 
         {/* Results Screen */}
         {stage === 'result' && useMemo(() => (

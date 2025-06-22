@@ -28,6 +28,7 @@ interface QuizConfig {
   testId?: string;
   questionCount: number;
   timeLimit: number; // in seconds
+  totalTimeLimit?: number; // in seconds, for exam mode
   aiTutor: boolean;
   gameMode: boolean;
   characterName?: string;
@@ -57,6 +58,7 @@ export default function DrivingQuizApp() {
     mode: 'random',
     questionCount: 20,
     timeLimit: 30,
+    totalTimeLimit: 480, // 8 minutes for exam mode
     aiTutor: true,
     gameMode: true,
     characterName: undefined,
@@ -76,6 +78,7 @@ export default function DrivingQuizApp() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
+  const [totalTimeLeft, setTotalTimeLeft] = useState(480); // 8 minutes for exam mode
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   // Removed unused state variable: const [aiAdvice, setAiAdvice] = useState<string>('');
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
@@ -97,14 +100,20 @@ export default function DrivingQuizApp() {
   const startQuiz = useMemo(() => (config: QuizConfig = quizConfig) => {
     // Get questions based on configuration
     let selectedQuestions: Question[] = [];
+    let questionCount = config.questionCount;
+    
+    // Override question count for exam mode
+    if (config.mode === 'exam') {
+      questionCount = 25; // Exam mode always has 25 questions
+    }
     
     if (config.mode === 'spaced-repetition') {
       // Get questions due for review using spaced repetition algorithm
-      selectedQuestions = getQuestionsForReview(availableQuestions, config.questionCount);
+      selectedQuestions = getQuestionsForReview(availableQuestions, questionCount);
       
       // If not enough questions for review, fill with random questions
-      if (selectedQuestions.length < config.questionCount) {
-        const remainingCount = config.questionCount - selectedQuestions.length;
+      if (selectedQuestions.length < questionCount) {
+        const remainingCount = questionCount - selectedQuestions.length;
         const remainingQuestions = shuffle(
           availableQuestions.filter(q => !selectedQuestions.some(sq => sq.question_id === q.question_id))
         ).slice(0, remainingCount);
@@ -118,13 +127,13 @@ export default function DrivingQuizApp() {
       // Apply spaced repetition if enabled
       if (config.enableSpacedRepetition && config.prioritizeDifficultQuestions) {
         // Get difficult questions first based on spaced repetition data
-        const difficultQuestions = getQuestionsForReview(testQuestions, config.questionCount);
+        const difficultQuestions = getQuestionsForReview(testQuestions, questionCount);
         
         // If we have enough difficult questions, use them; otherwise mix with random questions
-        if (difficultQuestions.length >= config.questionCount) {
-          selectedQuestions = difficultQuestions.slice(0, config.questionCount);
+        if (difficultQuestions.length >= questionCount) {
+          selectedQuestions = difficultQuestions.slice(0, questionCount);
         } else {
-          const remainingCount = config.questionCount - difficultQuestions.length;
+          const remainingCount = questionCount - difficultQuestions.length;
           const remainingQuestions = shuffle(
             testQuestions.filter(q => !difficultQuestions.some(dq => dq.question_id === q.question_id))
           ).slice(0, remainingCount);
@@ -133,19 +142,19 @@ export default function DrivingQuizApp() {
         }
       } else {
         // Standard random selection from test
-        selectedQuestions = shuffle(testQuestions).slice(0, config.questionCount);
+        selectedQuestions = shuffle(testQuestions).slice(0, questionCount);
       }
     } else {
       // Get random questions from all tests
       if (config.enableSpacedRepetition && config.prioritizeDifficultQuestions) {
         // Get difficult questions first based on spaced repetition data
-        const difficultQuestions = getQuestionsForReview(availableQuestions, config.questionCount);
+        const difficultQuestions = getQuestionsForReview(availableQuestions, questionCount);
         
         // If we have enough difficult questions, use them; otherwise mix with random questions
-        if (difficultQuestions.length >= config.questionCount) {
-          selectedQuestions = difficultQuestions.slice(0, config.questionCount);
+        if (difficultQuestions.length >= questionCount) {
+          selectedQuestions = difficultQuestions.slice(0, questionCount);
         } else {
-          const remainingCount = config.questionCount - difficultQuestions.length;
+          const remainingCount = questionCount - difficultQuestions.length;
           const remainingQuestions = shuffle(
             availableQuestions.filter(q => !difficultQuestions.some(dq => dq.question_id === q.question_id))
           ).slice(0, remainingCount);
@@ -154,7 +163,7 @@ export default function DrivingQuizApp() {
         }
       } else {
         // Standard random selection
-        selectedQuestions = shuffle(availableQuestions).slice(0, config.questionCount);
+        selectedQuestions = shuffle(availableQuestions).slice(0, questionCount);
       }
     }
     
@@ -164,7 +173,16 @@ export default function DrivingQuizApp() {
     setUserAnswers([]);
     setSelectedAnswer(null);
     setShowExplanation(false);
+    
+    // For exam mode, we use the per-question time limit for the first question
+    // and set the total time limit for the entire exam
     setTimeLeft(config.timeLimit);
+    
+    // Set total time limit for exam mode
+    if (config.mode === 'exam' && config.totalTimeLimit) {
+      setTotalTimeLeft(config.totalTimeLimit);
+    }
+    
     // setQuizStartTime(new Date()); // Removed assignment to unused variable
     setStage('quiz');
   }, [availableQuestions, quizConfig]);
@@ -215,7 +233,9 @@ export default function DrivingQuizApp() {
 
   // Timer effect - optimized with useRef to prevent unnecessary re-renders
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const totalTimerRef = useRef<NodeJS.Timeout | null>(null);
   
+  // Per-question timer effect
   useEffect(() => {
     // Skip timer in study mode with unlimited time enabled
     if (quizConfig.mode === 'study' && quizConfig.allowUnlimitedTime) {
@@ -242,6 +262,35 @@ export default function DrivingQuizApp() {
       }
     };
   }, [timeLeft, stage, showExplanation, handleTimeUp, quizConfig.mode, quizConfig.allowUnlimitedTime]);
+  
+  // Total exam time timer effect
+  useEffect(() => {
+    // Only run this timer for exam mode
+    if (quizConfig.mode !== 'exam' || stage !== 'quiz') {
+      return;
+    }
+    
+    // Clear any existing timer
+    if (totalTimerRef.current) {
+      clearTimeout(totalTimerRef.current);
+      totalTimerRef.current = null;
+    }
+    
+    if (totalTimeLeft > 0) {
+      totalTimerRef.current = setTimeout(() => setTotalTimeLeft(totalTimeLeft - 1), 1000);
+    } else if (totalTimeLeft === 0) {
+      // Time's up for the entire exam
+      setStage('result');
+    }
+    
+    // Cleanup function
+    return () => {
+      if (totalTimerRef.current) {
+        clearTimeout(totalTimerRef.current);
+        totalTimerRef.current = null;
+      }
+    };
+  }, [totalTimeLeft, stage, quizConfig.mode]);
 
   const nextQuestion = useMemo(() => () => {
     // Reset state for the next question
@@ -252,13 +301,34 @@ export default function DrivingQuizApp() {
     if (currentQuestionIndex < questions.length - 1) {
       // Move to the next question
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-      // Reset timer
+      // Reset per-question timer
       setTimeLeft(quizConfig.timeLimit);
+      
+      // For exam mode, check if total time is up
+      if (quizConfig.mode === 'exam' && totalTimeLeft <= 0) {
+        // End of exam due to time limit
+        setStage('result');
+      }
     } else {
       // End of quiz
       setStage('result');
     }
-  }, [currentQuestionIndex, questions.length, quizConfig.timeLimit]);
+  }, [currentQuestionIndex, questions.length, quizConfig.timeLimit, quizConfig.mode, totalTimeLeft]);
+  
+  // Function to go back to the previous question
+  const previousQuestion = useMemo(() => () => {
+    if (currentQuestionIndex > 0) {
+      // Reset state for the previous question
+      setSelectedAnswer(userAnswers[currentQuestionIndex - 1] || null);
+      setShowExplanation(true); // Show explanation for the previous question
+      setIsAnswerCorrect(userAnswers[currentQuestionIndex - 1] === questions[currentQuestionIndex - 1].correct_answer);
+      
+      // Move to the previous question
+      setCurrentQuestionIndex(prevIndex => prevIndex - 1);
+      // Reset per-question timer
+      setTimeLeft(quizConfig.timeLimit);
+    }
+  }, [currentQuestionIndex, questions, quizConfig.timeLimit, userAnswers]);
 
   const getScoreColor = (score: number, total: number) => {
     const percentage = (score / total) * 100;
@@ -352,7 +422,18 @@ export default function DrivingQuizApp() {
                   onChange={(e) => {
                     const newMode = e.target.value as QuizMode;
                     // Reset study-specific settings when changing modes
-                    if (newMode !== 'study') {
+                    if (newMode === 'exam') {
+                      // Special settings for exam mode
+                      setQuizConfig({
+                        ...quizConfig, 
+                        mode: newMode,
+                        questionCount: 25, // Force 25 questions for exam mode
+                        totalTimeLimit: 480, // 8 minutes
+                        showDetailedExplanations: false,
+                        focusOnZimbabweLaws: false,
+                        allowUnlimitedTime: false
+                      });
+                    } else if (newMode !== 'study') {
                       setQuizConfig({
                         ...quizConfig, 
                         mode: newMode,
@@ -375,10 +456,17 @@ export default function DrivingQuizApp() {
                   <option value="random">Random Questions</option>
                   <option value="by-test">Specific Test</option>
                   <option value="practice">Practice Mode</option>
-                  <option value="exam">Exam Mode</option>
-                  <option value="study">Study Mode 📚</option>
-                  <option value="spaced-repetition">Spaced Repetition</option>
+                  <option value="exam">🔥 Exam Mode (8 min, 25 Questions)</option>
+                  <option value="study">📚 Study Mode</option>
+                  
                 </select>
+                {quizConfig.mode === 'exam' && (
+                  <div className="mt-2 p-2 bg-yellow-900/30 rounded border border-yellow-800">
+                    <p className="text-xs text-yellow-300 flex items-center">
+                      <span className="mr-1">⚠️</span> Exam mode simulates a real driving test with 25 questions and an 8-minute time limit
+                    </p>
+                  </div>
+                )}
               </div>
               
               {quizConfig.mode === 'by-test' && (
@@ -401,18 +489,25 @@ export default function DrivingQuizApp() {
                 <label className="block text-sm font-medium text-gray-300 mb-1 sm:mb-2">Number of Questions</label>
                 <select 
                   className="w-full p-2 sm:p-3 border border-gray-700 rounded-lg bg-gray-800 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-                  value={quizConfig.questionCount}
+                  value={quizConfig.mode === 'exam' ? 25 : quizConfig.questionCount}
                   onChange={(e) => setQuizConfig({...quizConfig, questionCount: parseInt(e.target.value)})}
+                  disabled={quizConfig.mode === 'exam'} // Disable for exam mode
                 >
                   <option value={10}>10 Questions</option>
                   <option value={20}>20 Questions</option>
+                  <option value={25}>25 Questions</option>
                   <option value={30}>30 Questions</option>
                   <option value={50}>50 Questions</option>
                 </select>
+                {quizConfig.mode === 'exam' && (
+                  <p className="text-xs text-yellow-400 mt-1">Exam mode always uses 25 questions</p>
+                )}
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1 sm:mb-2">Time Per Question</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1 sm:mb-2">
+                  {quizConfig.mode === 'exam' ? 'Time Limits' : 'Time Per Question'}
+                </label>
                 <select 
                   className="w-full p-2 sm:p-3 border border-gray-700 rounded-lg bg-gray-800 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   value={quizConfig.timeLimit}
@@ -423,6 +518,13 @@ export default function DrivingQuizApp() {
                   <option value={45}>45 Seconds</option>
                   <option value={60}>60 Seconds</option>
                 </select>
+                {quizConfig.mode === 'exam' && (
+                  <div className="mt-2 p-2 bg-blue-900/30 rounded border border-blue-800">
+                    <p className="text-xs text-blue-300 flex items-center">
+                      <span className="mr-1">⏳</span> Exam mode: 8 minute total time limit
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Spaced Repetition is enabled by default but hidden from UI */}
@@ -574,6 +676,21 @@ export default function DrivingQuizApp() {
                   <span className="mr-2">📚</span>
                   Study Mode: Unlimited Time
                 </div>
+              ) : quizConfig.mode === 'exam' ? (
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-2">
+                  <div className={`inline-flex items-center px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium ${
+                    timeLeft <= 10 ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+                  }`}>
+                    <span className="mr-2">⏱️</span>
+                    Question Time: {timeLeft}s
+                  </div>
+                  <div className={`inline-flex items-center px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium ${
+                    totalTimeLeft <= 60 ? 'bg-red-100 text-red-800' : 'bg-purple-100 text-purple-800'
+                  }`}>
+                    <span className="mr-2">⏳</span>
+                    Exam Time: {Math.floor(totalTimeLeft / 60)}:{(totalTimeLeft % 60).toString().padStart(2, '0')}
+                  </div>
+                </div>
               ) : (
                 <div className={`inline-flex items-center px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium ${
                   timeLeft <= 10 ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
@@ -675,12 +792,20 @@ export default function DrivingQuizApp() {
               />
             )}
 
-            {/* Next Button */}
+            {/* Navigation Buttons */}
             {showExplanation && (
-              <div className="text-center mt-3 sm:mt-4">
+              <div className="flex justify-center gap-3 mt-3 sm:mt-4">
+                {currentQuestionIndex > 0 && (
+                  <button
+                    onClick={previousQuestion}
+                    className="bg-gray-600 hover:bg-gray-700 active:bg-gray-800 text-white font-bold py-2 sm:py-3 px-3 sm:px-6 rounded-lg transition-colors duration-200 touch-manipulation text-xs sm:text-base border border-gray-500 sm:w-auto"
+                  >
+                    Previous Question
+                  </button>
+                )}
                 <button
                   onClick={nextQuestion}
-                  className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2 sm:py-3 px-3 sm:px-6 rounded-lg transition-colors duration-200 touch-manipulation text-xs sm:text-base border border-blue-500 w-full sm:w-auto"
+                  className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2 sm:py-3 px-3 sm:px-6 rounded-lg transition-colors duration-200 touch-manipulation text-xs sm:text-base border border-blue-500 sm:w-auto"
                 >
                   {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'View Results'}
                 </button>
@@ -690,7 +815,7 @@ export default function DrivingQuizApp() {
             );
           }
           return null;
-        }, [currentQuestion, currentQuestionIndex, questions.length, score, showExplanation, timeLeft, selectedAnswer, isAnswerCorrect, quizConfig, handleAnswerSelect, nextQuestion, stage])}
+        }, [currentQuestion, currentQuestionIndex, questions.length, score, showExplanation, timeLeft, selectedAnswer, isAnswerCorrect, quizConfig, handleAnswerSelect, nextQuestion, previousQuestion, stage])}
 
         {/* Results Screen */}
         {useMemo(() => {

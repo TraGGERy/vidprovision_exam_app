@@ -169,7 +169,7 @@ export default function DrivingQuizApp() {
     setStage('quiz');
   }, [availableQuestions, quizConfig]);
 
-  const handleAnswerSelect = (option: string) => {
+  const handleAnswerSelect = useMemo(() => (option: string) => {
     // Prevent multiple selections or clicks during explanation
     if (selectedAnswer !== null || showExplanation) return;
     
@@ -192,7 +192,8 @@ export default function DrivingQuizApp() {
     if (quizConfig.enableSpacedRepetition || quizConfig.mode === 'spaced-repetition') {
       updateQuestionPerformance(currentQuestion.question_id, correct);
     }
-  };
+  }, [selectedAnswer, showExplanation, questions, currentQuestionIndex, quizConfig.enableSpacedRepetition, quizConfig.mode]);
+
 
   // Define handleTimeUp with useCallback to prevent recreation on every render
   const handleTimeUp = useMemo(() => {
@@ -242,7 +243,7 @@ export default function DrivingQuizApp() {
     };
   }, [timeLeft, stage, showExplanation, handleTimeUp, quizConfig.mode, quizConfig.allowUnlimitedTime]);
 
-  const nextQuestion = () => {
+  const nextQuestion = useMemo(() => () => {
     // Reset state for the next question
     setSelectedAnswer(null);
     setShowExplanation(false);
@@ -257,7 +258,7 @@ export default function DrivingQuizApp() {
       // End of quiz
       setStage('result');
     }
-  };
+  }, [currentQuestionIndex, questions.length, quizConfig.timeLimit]);
 
   const getScoreColor = (score: number, total: number) => {
     const percentage = (score / total) * 100;
@@ -266,14 +267,14 @@ export default function DrivingQuizApp() {
     return 'text-red-400';
   };
 
-  const getScoreMessage = (score: number, total: number) => {
+  const getScoreMessage = useMemo(() => (score: number, total: number) => {
     const percentage = (score / total) * 100;
     if (percentage >= 90) return 'Excellent! You\'re ready to drive safely!';
     if (percentage >= 80) return 'Great job! You have a good understanding of driving rules.';
     if (percentage >= 70) return 'Good work! Review the areas you missed.';
     if (percentage >= 60) return 'You\'re getting there! More study needed.';
     return 'Keep studying! Practice makes perfect.';
-  };
+  }, []);
 
   // Handler for AI advice - currently not storing advice in state
   // This is called by AITutor component but we're not using the advice elsewhere
@@ -535,7 +536,9 @@ export default function DrivingQuizApp() {
         )}
 
         {/* Quiz Screen */}
-        {stage === 'quiz' && currentQuestion && useMemo(() => (
+        {useMemo(() => {
+          if (stage === 'quiz' && currentQuestion) {
+            return (
           <div className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-800">
             {/* Progress Bar */}
             <div className="mb-4 sm:mb-6">
@@ -684,10 +687,15 @@ export default function DrivingQuizApp() {
               </div>
             )}
           </div>
-        ), [currentQuestion, currentQuestionIndex, questions.length, score, showExplanation, timeLeft, selectedAnswer, isAnswerCorrect, quizConfig, handleAnswerSelect, nextQuestion])}
+            );
+          }
+          return null;
+        }, [currentQuestion, currentQuestionIndex, questions.length, score, showExplanation, timeLeft, selectedAnswer, isAnswerCorrect, quizConfig, handleAnswerSelect, nextQuestion, stage])}
 
         {/* Results Screen */}
-        {stage === 'result' && useMemo(() => (
+        {useMemo(() => {
+          if (stage === 'result') {
+            return (
           <div className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 text-center border border-gray-800">
             <div className="mb-4 sm:mb-6">
               <div className="text-3xl sm:text-5xl md:text-6xl mb-3 sm:mb-4">
@@ -764,7 +772,10 @@ export default function DrivingQuizApp() {
               </div>
             </div>
           </div>
-        ), [score, questions.length, quizConfig.focusOnZimbabweLaws, getScoreColor, getScoreMessage, startQuiz])}
+            );
+          }
+          return null;
+        }, [score, questions.length, quizConfig.focusOnZimbabweLaws, getScoreColor, getScoreMessage, startQuiz, stage])}
 
         {/* Footer */}
         <div className="text-center mt-6 sm:mt-8 text-gray-400 text-xs sm:text-sm px-4">

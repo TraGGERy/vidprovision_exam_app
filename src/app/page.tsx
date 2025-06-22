@@ -1,11 +1,19 @@
 'use client';
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { registerServiceWorker } from "../utils/registerSW";
 import QuestionImage from "../components/QuestionImage";
 import AITutor from "../components/AITutor";
 import SplashScreen from "../components/SplashScreen";
+import LeaderboardTable from "../components/LeaderboardTable";
 import { Question, getAllQuestions, getQuestionsByTest, getAllTestIds, shuffle } from "../utils/questionUtils";
+import { 
+  updateQuestionPerformance, 
+  getQuestionsForReview, 
+  getDifficultyDescription,
+  getProgressStats
+} from "../utils/spacedRepetition";
+import { generateLeaderboard, LeaderboardUser } from "../utils/leaderboardUtils";
 
 // Legacy interface for backward compatibility
 // Removed unused interface
@@ -14,7 +22,7 @@ import { Question, getAllQuestions, getQuestionsByTest, getAllTestIds, shuffle }
 
 
 // Quiz modes
-type QuizMode = 'random' | 'by-test' | 'practice' | 'exam' | 'study';
+type QuizMode = 'random' | 'by-test' | 'practice' | 'exam' | 'study' | 'spaced-repetition';
 
 interface QuizConfig {
   mode: QuizMode;
@@ -27,6 +35,8 @@ interface QuizConfig {
   showDetailedExplanations?: boolean; // For study mode
   focusOnZimbabweLaws?: boolean; // For Zimbabwe-specific content
   allowUnlimitedTime?: boolean; // For study mode
+  enableSpacedRepetition?: boolean; // Enable spaced repetition across all modes
+  prioritizeDifficultQuestions?: boolean; // Prioritize questions marked as difficult
 }
 
 export default function DrivingQuizApp() {
@@ -53,7 +63,9 @@ export default function DrivingQuizApp() {
     characterName: undefined,
     showDetailedExplanations: false,
     focusOnZimbabweLaws: false,
-    allowUnlimitedTime: false
+    allowUnlimitedTime: false,
+    enableSpacedRepetition: true, // Enable spaced repetition by default
+    prioritizeDifficultQuestions: true // Prioritize difficult questions by default
   });
   
   const [stage, setStage] = useState<'start' | 'quiz' | 'result'>('start');
@@ -65,6 +77,7 @@ export default function DrivingQuizApp() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   // Removed unused state variable: const [aiAdvice, setAiAdvice] = useState<string>('');
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
   // const [quizStartTime, setQuizStartTime] = useState<Date | null>(null); // Removed unused variable
@@ -80,32 +93,70 @@ export default function DrivingQuizApp() {
     return getAllQuestions();
   }, [quizConfig.mode, quizConfig.testId]);
 
-  // Timer effect
-  useEffect(() => {
-    // Skip timer in study mode with unlimited time enabled
-    if (quizConfig.mode === 'study' && quizConfig.allowUnlimitedTime) {
-      return;
-    }
-    
-    if (stage === 'quiz' && timeLeft > 0 && !showExplanation) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && !showExplanation) {
-      handleTimeUp();
-    }
-  }, [timeLeft, stage, showExplanation, quizConfig.mode, quizConfig.allowUnlimitedTime]);
+  // Timer effect is now consolidated in a single useEffect below
 
-  const startQuiz = (config: QuizConfig = quizConfig) => {
+  const startQuiz = useMemo(() => (config: QuizConfig = quizConfig) => {
     // Get questions based on configuration
     let selectedQuestions: Question[] = [];
     
-    if (config.mode === 'by-test' && config.testId) {
+    if (config.mode === 'spaced-repetition') {
+      // Get questions due for review using spaced repetition algorithm
+      selectedQuestions = getQuestionsForReview(availableQuestions, config.questionCount);
+      
+      // If not enough questions for review, fill with random questions
+      if (selectedQuestions.length < config.questionCount) {
+        const remainingCount = config.questionCount - selectedQuestions.length;
+        const remainingQuestions = shuffle(
+          availableQuestions.filter(q => !selectedQuestions.some(sq => sq.question_id === q.question_id))
+        ).slice(0, remainingCount);
+        
+        selectedQuestions = [...selectedQuestions, ...remainingQuestions];
+      }
+    } else if (config.mode === 'by-test' && config.testId) {
       // Get questions from specific test
-      const testQuestions = getQuestionsByTest(config.testId);
-      selectedQuestions = shuffle(testQuestions).slice(0, config.questionCount);
+      let testQuestions = getQuestionsByTest(config.testId);
+      
+      // Apply spaced repetition if enabled
+      if (config.enableSpacedRepetition && config.prioritizeDifficultQuestions) {
+        // Get difficult questions first based on spaced repetition data
+        const difficultQuestions = getQuestionsForReview(testQuestions, config.questionCount);
+        
+        // If we have enough difficult questions, use them; otherwise mix with random questions
+        if (difficultQuestions.length >= config.questionCount) {
+          selectedQuestions = difficultQuestions.slice(0, config.questionCount);
+        } else {
+          const remainingCount = config.questionCount - difficultQuestions.length;
+          const remainingQuestions = shuffle(
+            testQuestions.filter(q => !difficultQuestions.some(dq => dq.question_id === q.question_id))
+          ).slice(0, remainingCount);
+          
+          selectedQuestions = [...difficultQuestions, ...remainingQuestions];
+        }
+      } else {
+        // Standard random selection from test
+        selectedQuestions = shuffle(testQuestions).slice(0, config.questionCount);
+      }
     } else {
       // Get random questions from all tests
-      selectedQuestions = shuffle(availableQuestions).slice(0, config.questionCount);
+      if (config.enableSpacedRepetition && config.prioritizeDifficultQuestions) {
+        // Get difficult questions first based on spaced repetition data
+        const difficultQuestions = getQuestionsForReview(availableQuestions, config.questionCount);
+        
+        // If we have enough difficult questions, use them; otherwise mix with random questions
+        if (difficultQuestions.length >= config.questionCount) {
+          selectedQuestions = difficultQuestions.slice(0, config.questionCount);
+        } else {
+          const remainingCount = config.questionCount - difficultQuestions.length;
+          const remainingQuestions = shuffle(
+            availableQuestions.filter(q => !difficultQuestions.some(dq => dq.question_id === q.question_id))
+          ).slice(0, remainingCount);
+          
+          selectedQuestions = [...difficultQuestions, ...remainingQuestions];
+        }
+      } else {
+        // Standard random selection
+        selectedQuestions = shuffle(availableQuestions).slice(0, config.questionCount);
+      }
     }
     
     setQuestions(selectedQuestions);
@@ -117,54 +168,94 @@ export default function DrivingQuizApp() {
     setTimeLeft(config.timeLimit);
     // setQuizStartTime(new Date()); // Removed assignment to unused variable
     setStage('quiz');
-  };
+  }, [availableQuestions, quizConfig]);
 
   const handleAnswerSelect = (option: string) => {
+    // Prevent multiple selections or clicks during explanation
     if (selectedAnswer !== null || showExplanation) return;
     
     setSelectedAnswer(option);
     setShowExplanation(true);
     
-    const newUserAnswers = [...userAnswers, option];
-    setUserAnswers(newUserAnswers);
+    // Update user answers using functional update to ensure latest state
+    setUserAnswers(prev => [...prev, option]);
     
-    const correct = option === questions[currentQuestionIndex].correct_answer;
+    const currentQuestion = questions[currentQuestionIndex];
+    const correct = option === currentQuestion.correct_answer;
     setIsAnswerCorrect(correct);
     
+    // Update score if answer is correct using functional update
     if (correct) {
-      setScore(score + 1);
+      setScore(prev => prev + 1);
+    }
+    
+    // Update spaced repetition data for this question
+    if (quizConfig.enableSpacedRepetition || quizConfig.mode === 'spaced-repetition') {
+      updateQuestionPerformance(currentQuestion.question_id, correct);
     }
   };
 
-  // Define handleTimeUp before the useEffect that uses it
-  const handleTimeUp = () => {
-    if (selectedAnswer === null) {
-      setSelectedAnswer(''); // Indicate no answer selected
-      setUserAnswers([...userAnswers, '']);
-      setShowExplanation(true);
-      setIsAnswerCorrect(false); // Time's up means incorrect answer
-    }
-  };
+  // Define handleTimeUp with useCallback to prevent recreation on every render
+  const handleTimeUp = useMemo(() => {
+    return () => {
+      if (selectedAnswer === null) {
+        setSelectedAnswer(''); // Indicate no answer selected
+        setUserAnswers([...userAnswers, '']);
+        setShowExplanation(true);
+        setIsAnswerCorrect(false); // Time's up means incorrect answer
+        
+        // Update spaced repetition data for this question (mark as incorrect due to timeout)
+        if (quizConfig.enableSpacedRepetition || quizConfig.mode === 'spaced-repetition') {
+          const currentQuestion = questions[currentQuestionIndex];
+          updateQuestionPerformance(currentQuestion.question_id, false);
+        }
+      }
+    };
+  }, [selectedAnswer, userAnswers, quizConfig.enableSpacedRepetition, quizConfig.mode, questions, currentQuestionIndex]);
 
-  // Timer effect
+  // Timer effect - optimized with useRef to prevent unnecessary re-renders
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
   useEffect(() => {
+    // Skip timer in study mode with unlimited time enabled
+    if (quizConfig.mode === 'study' && quizConfig.allowUnlimitedTime) {
+      return;
+    }
+    
+    // Clear any existing timer
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    
     if (stage === 'quiz' && timeLeft > 0 && !showExplanation) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
+      timerRef.current = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
     } else if (timeLeft === 0 && !showExplanation) {
       handleTimeUp();
     }
-  }, [timeLeft, stage, showExplanation, handleTimeUp]);
+    
+    // Cleanup function
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [timeLeft, stage, showExplanation, handleTimeUp, quizConfig.mode, quizConfig.allowUnlimitedTime]);
 
   const nextQuestion = () => {
+    // Reset state for the next question
+    setSelectedAnswer(null);
+    setShowExplanation(false);
+    setIsAnswerCorrect(null);
+    
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedAnswer(null);
-      setShowExplanation(false);
+      // Move to the next question
+      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+      // Reset timer
       setTimeLeft(quizConfig.timeLimit);
-      setIsAnswerCorrect(null);
-      // Removed setAiAdvice call as the state variable is no longer used
     } else {
+      // End of quiz
       setStage('result');
     }
   };
@@ -196,8 +287,47 @@ export default function DrivingQuizApp() {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-gray-950 text-white relative">
       {showSplash && <SplashScreen />}
+      
+      {/* Floating Trophy Icon - Memoized to prevent unnecessary re-renders */}
+      {useMemo(() => {
+        if (stage !== 'result') return null;
+        
+        return (
+          <div className="fixed top-4 right-4 z-50">
+            <button 
+              onClick={() => setShowLeaderboard(prev => !prev)}
+              className="bg-blue-900/90 rounded-full p-3 border border-blue-700 shadow-lg hover:bg-blue-800/90 transition-colors"
+              title="View leaderboard"
+            >
+              <span className="text-xl">🏆</span>
+            </button>
+          </div>
+        );
+      }, [stage, setShowLeaderboard])}
+      
+      {/* Floating Leaderboard - Memoized to prevent unnecessary re-renders */}
+      {useMemo(() => {
+        if (!showLeaderboard || stage !== 'result') return null;
+        
+        return (
+          <div className="fixed top-16 left-0 right-0 z-50 mx-auto max-w-md bg-blue-900/90 rounded-lg border border-blue-700 shadow-lg p-4 animate-fade-in">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-base font-semibold text-white flex items-center">
+                <span className="mr-2">🏆</span> Leaderboard
+              </h3>
+              <button 
+                onClick={() => setShowLeaderboard(false)}
+                className="text-gray-300 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            <LeaderboardTable score={score} questions={questions} limit={5} />
+          </div>
+        );
+      }, [showLeaderboard, stage, score, questions])}
       <div className="container mx-auto py-4 sm:py-8 px-3 sm:px-4 max-w-4xl">
         <div className="text-center mb-4 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">🚗 Driving License Quiz</h1>
@@ -247,6 +377,7 @@ export default function DrivingQuizApp() {
                   <option value="practice">Practice Mode</option>
                   <option value="exam">Exam Mode</option>
                   <option value="study">Study Mode 📚</option>
+                  <option value="spaced-repetition">Spaced Repetition</option>
                 </select>
               </div>
               
@@ -294,6 +425,8 @@ export default function DrivingQuizApp() {
                 </select>
               </div>
 
+              {/* Spaced Repetition is enabled by default but hidden from UI */}
+              
               <div className="border-t border-gray-700 pt-3 sm:pt-4 mt-3 sm:mt-4">
                 <h3 className="text-base sm:text-lg font-medium text-blue-400 mb-2 sm:mb-3">🧠 AI Tutor Settings</h3>
                 
@@ -403,7 +536,7 @@ export default function DrivingQuizApp() {
         )}
 
         {/* Quiz Screen */}
-        {stage === 'quiz' && currentQuestion && (
+        {stage === 'quiz' && currentQuestion && useMemo(() => (
           <div className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-800">
             {/* Progress Bar */}
             <div className="mb-4 sm:mb-6">
@@ -421,6 +554,15 @@ export default function DrivingQuizApp() {
                   style={{ width: `${((currentQuestionIndex + (showExplanation ? 1 : 0)) / questions.length) * 100}%` }}
                 ></div>
               </div>
+              
+              {/* Difficulty Level - Only show when spaced repetition is enabled */}
+              {(quizConfig.enableSpacedRepetition || quizConfig.mode === 'spaced-repetition') && currentQuestion && (
+                <div className="mt-2 flex justify-end">
+                  <span className="text-xs px-2 py-1 rounded-full bg-gray-800 text-gray-300">
+                    Difficulty: {getDifficultyDescription(currentQuestion.question_id)}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Timer */}
@@ -543,10 +685,10 @@ export default function DrivingQuizApp() {
               </div>
             )}
           </div>
-        )}
+        ), [currentQuestion, currentQuestionIndex, questions.length, score, showExplanation, timeLeft, selectedAnswer, isAnswerCorrect, quizConfig, handleAnswerSelect, nextQuestion, getDifficultyDescription])}
 
         {/* Results Screen */}
-        {stage === 'result' && (
+        {stage === 'result' && useMemo(() => (
           <div className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 text-center border border-gray-800">
             <div className="mb-4 sm:mb-6">
               <div className="text-3xl sm:text-5xl md:text-6xl mb-3 sm:mb-4">
@@ -578,6 +720,10 @@ export default function DrivingQuizApp() {
                 </div>
               </div>
             </div>
+            
+            {/* Removed leaderboard section - now accessible via floating trophy icon */}
+            
+            {/* Spaced Repetition functionality is enabled in the background but stats are hidden from the UI */}
             
             {/* Zimbabwe Study Resources - Only shown when Zimbabwe focus is enabled */}
             {quizConfig.focusOnZimbabweLaws && (
@@ -619,7 +765,7 @@ export default function DrivingQuizApp() {
               </div>
             </div>
           </div>
-        )}
+        ), [score, questions.length, quizConfig.focusOnZimbabweLaws, getScoreColor, getScoreMessage, startQuiz])}
 
         {/* Footer */}
         <div className="text-center mt-6 sm:mt-8 text-gray-400 text-xs sm:text-sm px-4">

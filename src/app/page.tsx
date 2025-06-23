@@ -174,9 +174,11 @@ export default function DrivingQuizApp() {
     setSelectedAnswer(null);
     setShowExplanation(false);
     
-    // For exam mode, we use the per-question time limit for the first question
-    // and set the total time limit for the entire exam
-    setTimeLeft(config.timeLimit);
+    // Set time limit based on mode
+    if (config.mode !== 'exam') {
+      // For non-exam modes, set the per-question time limit
+      setTimeLeft(config.timeLimit);
+    }
     
     // Set total time limit for exam mode
     if (config.mode === 'exam' && config.totalTimeLimit) {
@@ -237,8 +239,8 @@ export default function DrivingQuizApp() {
   
   // Per-question timer effect
   useEffect(() => {
-    // Skip timer in study mode with unlimited time enabled
-    if (quizConfig.mode === 'study' && quizConfig.allowUnlimitedTime) {
+    // Skip timer in study mode with unlimited time enabled or in exam mode
+    if ((quizConfig.mode === 'study' && quizConfig.allowUnlimitedTime) || quizConfig.mode === 'exam') {
       return;
     }
     
@@ -301,8 +303,10 @@ export default function DrivingQuizApp() {
     if (currentQuestionIndex < questions.length - 1) {
       // Move to the next question
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-      // Reset per-question timer
-      setTimeLeft(quizConfig.timeLimit);
+      // Reset per-question timer (only for non-exam modes)
+      if (quizConfig.mode !== 'exam') {
+        setTimeLeft(quizConfig.timeLimit);
+      }
       
       // For exam mode, check if total time is up
       if (quizConfig.mode === 'exam' && totalTimeLeft <= 0) {
@@ -325,10 +329,12 @@ export default function DrivingQuizApp() {
       
       // Move to the previous question
       setCurrentQuestionIndex(prevIndex => prevIndex - 1);
-      // Reset per-question timer
-      setTimeLeft(quizConfig.timeLimit);
+      // Reset per-question timer (only for non-exam modes)
+      if (quizConfig.mode !== 'exam') {
+        setTimeLeft(quizConfig.timeLimit);
+      }
     }
-  }, [currentQuestionIndex, questions, quizConfig.timeLimit, userAnswers]);
+  }, [currentQuestionIndex, questions, quizConfig.timeLimit, quizConfig.mode, userAnswers]);
 
   const getScoreColor = (score: number, total: number) => {
     const percentage = (score / total) * 100;
@@ -506,22 +512,28 @@ export default function DrivingQuizApp() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1 sm:mb-2">
-                  {quizConfig.mode === 'exam' ? 'Time Limits' : 'Time Per Question'}
+                  {quizConfig.mode === 'exam' ? 'Exam Time Limit' : 'Time Per Question'}
                 </label>
-                <select 
-                  className="w-full p-2 sm:p-3 border border-gray-700 rounded-lg bg-gray-800 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-                  value={quizConfig.timeLimit}
-                  onChange={(e) => setQuizConfig({...quizConfig, timeLimit: parseInt(e.target.value)})}
-                >
-                  <option value={15}>15 Seconds</option>
-                  <option value={30}>30 Seconds</option>
-                  <option value={45}>45 Seconds</option>
-                  <option value={60}>60 Seconds</option>
-                </select>
+                {quizConfig.mode !== 'exam' ? (
+                  <select 
+                    className="w-full p-2 sm:p-3 border border-gray-700 rounded-lg bg-gray-800 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                    value={quizConfig.timeLimit}
+                    onChange={(e) => setQuizConfig({...quizConfig, timeLimit: parseInt(e.target.value)})}
+                  >
+                    <option value={15}>15 Seconds</option>
+                    <option value={30}>30 Seconds</option>
+                    <option value={45}>45 Seconds</option>
+                    <option value={60}>60 Seconds</option>
+                  </select>
+                ) : (
+                  <div className="p-2 sm:p-3 border border-gray-700 rounded-lg bg-gray-800 text-white text-sm sm:text-base flex items-center justify-center">
+                    <span className="mr-2">⏳</span> 8 minutes for 25 questions
+                  </div>
+                )}
                 {quizConfig.mode === 'exam' && (
                   <div className="mt-2 p-2 bg-blue-900/30 rounded border border-blue-800">
                     <p className="text-xs text-blue-300 flex items-center">
-                      <span className="mr-1">⏳</span> Exam mode: 8 minute total time limit
+                      <span className="mr-1">⏳</span> Exam mode: 8 minute total time limit only
                     </p>
                   </div>
                 )}
@@ -677,13 +689,7 @@ export default function DrivingQuizApp() {
                   Study Mode: Unlimited Time
                 </div>
               ) : quizConfig.mode === 'exam' ? (
-                <div className="flex flex-col sm:flex-row justify-center items-center gap-2">
-                  <div className={`inline-flex items-center px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium ${
-                    timeLeft <= 10 ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    <span className="mr-2">⏱️</span>
-                    Question Time: {timeLeft}s
-                  </div>
+                <div className="flex justify-center items-center">
                   <div className={`inline-flex items-center px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium ${
                     totalTimeLeft <= 60 ? 'bg-red-100 text-red-800' : 'bg-purple-100 text-purple-800'
                   }`}>

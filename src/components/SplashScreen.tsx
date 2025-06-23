@@ -29,7 +29,7 @@ export default function SplashScreen() {
 
   return (
     <div 
-      className={`fixed inset-0 bg-gradient-to-b from-gray-900 to-black flex items-center justify-center z-50 transition-opacity duration-1000 ease-in-out ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
+      className={`fixed inset-0 bg-gradient-to-b from-gray-900 to-black flex flex-col items-center justify-center z-50 transition-opacity duration-1000 ease-in-out ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
     >
       <div className="text-center">
         <div className="w-24 h-24 mx-auto mb-6 relative">
@@ -49,12 +49,13 @@ export default function SplashScreen() {
           </svg>
         </div>
         <h1 className="text-3xl font-bold text-white mb-3 tracking-tight">VidApp</h1>
-        <div className="flex justify-center items-center space-x-1.5">
+        <div className="flex justify-center items-center space-x-1.5 mb-4">
           <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
           <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse delay-150"></div>
           <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse delay-300"></div>
         </div>
       </div>
+      <p className="text-xs text-gray-400 absolute bottom-6">powered by Mees Ai</p>
     </div>
   );
 }

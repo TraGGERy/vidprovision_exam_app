@@ -127,7 +127,7 @@ export default function BlogPage() {
       return matchesSearch && matchesCategory;
     });
     setFilteredPosts(filtered);
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, blogPosts]);
 
   // Format date to be more readable
   const formatDate = (dateString: string) => {
@@ -191,12 +191,16 @@ export default function BlogPage() {
             {filteredPosts.map((post) => (
               <div key={post.id} className="bg-gray-900/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:border-gray-700">
                 <div className="relative h-48 sm:h-52 w-full overflow-hidden">
-                  <img 
-                    src={post.imageUrl} 
-                    alt={post.title} 
-                    className="w-full h-full object-cover transition-all duration-700 hover:scale-110 filter hover:brightness-110"
-                  />
-                  <div className="absolute top-0 right-0 bg-blue-600/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 m-2 rounded-md shadow-md">
+                  <div className="relative w-full h-full">
+                    <Image 
+                      src={post.imageUrl} 
+                      alt={post.title} 
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                      className="object-cover transition-all duration-700 hover:scale-110 filter hover:brightness-110"
+                    />
+                  </div>
+                  <div className="absolute top-0 right-0 bg-blue-600/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 m-2 rounded-md shadow-md z-10">
                     {post.category.replace('-', ' ')}
                   </div>
                 </div>
@@ -234,7 +238,7 @@ export default function BlogPage() {
           <div className="text-center py-10 sm:py-16 bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-lg">
             <div className="text-5xl sm:text-6xl mb-4 sm:mb-6 opacity-75">🔍</div>
             <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">No articles found</h3>
-            <p className="text-sm sm:text-base text-gray-400 max-w-md mx-auto">Try adjusting your search or filter criteria to find what you're looking for</p>
+            <p className="text-sm sm:text-base text-gray-400 max-w-md mx-auto">Try adjusting your search or filter criteria to find what you&apos;re looking for</p>
           </div>
         )}
 

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 import Navigation from '../components/Navigation';
 
 interface BlogPost {
@@ -999,7 +1000,7 @@ const blogPosts: BlogPost[] = [
         </li>
       </ul>
       
-      <p>Remember, driving examiners aren\'t trying to trick you—they want to ensure you can drive safely and independently. By avoiding these common mistakes and demonstrating confident, safe driving practices, you\'ll maximize your chances of passing your driving test on the first attempt.</p>
+      <p>Remember, driving examiners aren&apos;t trying to trick you—they want to ensure you can drive safely and independently. By avoiding these common mistakes and demonstrating confident, safe driving practices, you&apos;ll maximize your chances of passing your driving test on the first attempt.</p>
     `
   }
 ];
@@ -1036,7 +1037,7 @@ export default function BlogPostPage() {
         <div className="text-center p-8">
           <div className="text-5xl mb-4">🔍</div>
           <h2 className="text-2xl font-bold mb-4">Article Not Found</h2>
-          <p className="text-gray-400 mb-6">The article you're looking for doesn't exist or has been moved.</p>
+          <p className="text-gray-400 mb-6">The article you&apos;re looking for doesn&apos;t exist or has been moved.</p>
           <Link href="/blog" className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
             Back to Blog
           </Link>
@@ -1083,11 +1084,15 @@ export default function BlogPostPage() {
 
         {/* Featured Image */}
         <div className="mb-6 sm:mb-8 rounded-xl overflow-hidden shadow-lg">
-          <img 
-            src={post.imageUrl} 
-            alt={post.title} 
-            className="w-full h-auto object-cover max-h-48 sm:max-h-64 md:max-h-80 lg:max-h-96 transition-transform hover:scale-105 duration-700"
-          />
+          <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96">
+            <Image 
+              src={post.imageUrl} 
+              alt={post.title} 
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, 100vw"
+              className="object-cover transition-transform hover:scale-105 duration-700"
+            />
+          </div>
         </div>
 
         {/* Article Content */}
@@ -1135,12 +1140,16 @@ export default function BlogPostPage() {
               {relatedPosts.map((relatedPost) => (
                 <div key={relatedPost.id} className="bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800 transition-all hover:scale-[1.02] hover:shadow-blue-900/20 hover:border-blue-800/50">
                   <div className="relative h-32 sm:h-36 md:h-40 w-full overflow-hidden">
-                    <img 
-                      src={relatedPost.imageUrl} 
-                      alt={relatedPost.title} 
-                      className="w-full h-full object-cover transition-transform hover:scale-110 duration-500"
-                    />
-                    <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-2 py-1 m-2 rounded">
+                    <div className="relative w-full h-full">
+                      <Image 
+                        src={relatedPost.imageUrl} 
+                        alt={relatedPost.title} 
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 33vw, 25vw"
+                        className="object-cover transition-transform hover:scale-110 duration-500"
+                      />
+                    </div>
+                    <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-2 py-1 m-2 rounded z-10">
                       {relatedPost.category.replace('-', ' ')}
                     </div>
                   </div>

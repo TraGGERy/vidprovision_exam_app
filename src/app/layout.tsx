@@ -26,8 +26,8 @@ export const metadata: Metadata = {
   viewport: {
     width: "device-width",
     initialScale: 1,
-    maximumScale: 1,
-    userScalable: false
+    maximumScale: 5,
+    userScalable: true
   },
   keywords: "Zimbabwe driving license, driving test preparation, driving quiz app, road rules Zimbabwe, traffic signs, PWA, driving exam, learner's license",
   authors: [{ name: "VidApp Team" }],

@@ -15,6 +15,7 @@ export default function NotFound() {
       </p>
       <Link 
         href="/"
+        prefetch={true}
         className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition-colors"
       >
         Return to Home

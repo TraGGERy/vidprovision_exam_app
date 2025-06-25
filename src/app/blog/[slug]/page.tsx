@@ -1029,7 +1029,7 @@ export default function BlogPostPage() {
         .slice(0, 3);
       setRelatedPosts(related);
     }
-  }, [params]);
+  }, [params, blogPosts]);
 
   if (!post) {
     return (
@@ -1038,7 +1038,7 @@ export default function BlogPostPage() {
           <div className="text-5xl mb-4">🔍</div>
           <h2 className="text-2xl font-bold mb-4">Article Not Found</h2>
           <p className="text-gray-400 mb-6">The article you&apos;re looking for doesn&apos;t exist or has been moved.</p>
-          <Link href="/blog" className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+          <Link href="/blog" prefetch={true} className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
             Back to Blog
           </Link>
         </div>
@@ -1052,7 +1052,7 @@ export default function BlogPostPage() {
       <div className="container mx-auto py-24 px-4 sm:px-6 max-w-4xl">
         {/* Back to Blog Link */}
         <div className="mb-4 sm:mb-6">
-          <Link href="/blog" className="text-blue-400 hover:text-blue-300 font-medium flex items-center text-sm sm:text-base transition-colors">
+          <Link href="/blog" prefetch={true} className="text-blue-400 hover:text-blue-300 font-medium flex items-center text-sm sm:text-base transition-colors">
             <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
@@ -1157,7 +1157,7 @@ export default function BlogPostPage() {
                   <div className="p-3 sm:p-4">
                     <h3 className="text-base sm:text-lg font-bold text-white mb-2 line-clamp-2">{relatedPost.title}</h3>
                     
-                    <Link href={`/blog/${relatedPost.slug}`} className="inline-flex items-center text-blue-400 hover:text-blue-300 text-xs sm:text-sm font-medium transition-colors">
+                    <Link href={`/blog/${relatedPost.slug}`} prefetch={true} className="inline-flex items-center text-blue-400 hover:text-blue-300 text-xs sm:text-sm font-medium transition-colors">
                       Read Article
                       <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>

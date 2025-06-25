@@ -127,7 +127,7 @@ export default function BlogPage() {
       return matchesSearch && matchesCategory;
     });
     setFilteredPosts(filtered);
-  }, [searchTerm, selectedCategory, blogPosts]);
+  }, [searchTerm, selectedCategory]);
 
   // Format date to be more readable
   const formatDate = (dateString: string) => {
@@ -224,7 +224,7 @@ export default function BlogPage() {
                   
                   <p className="text-sm sm:text-base text-gray-300 mb-4 line-clamp-3">{post.excerpt}</p>
                   
-                  <Link href={`/blog/${post.slug}`} className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm sm:text-base py-2 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                  <Link href={`/blog/${post.slug}`} prefetch={true} className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm sm:text-base py-2 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                     Read More
                     <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -244,7 +244,7 @@ export default function BlogPage() {
 
         {/* Back to Home */}
         <div className="mt-10 sm:mt-16 text-center">
-          <Link href="/" className="inline-flex items-center text-blue-400 hover:text-blue-300 font-medium text-base sm:text-lg transition-colors bg-gray-900/50 backdrop-blur-sm py-2 px-4 rounded-lg hover:bg-gray-800/70 shadow-md">
+          <Link href="/" prefetch={true} className="inline-flex items-center text-blue-400 hover:text-blue-300 font-medium text-base sm:text-lg transition-colors bg-gray-900/50 backdrop-blur-sm py-2 px-4 rounded-lg hover:bg-gray-800/70 shadow-md">
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>

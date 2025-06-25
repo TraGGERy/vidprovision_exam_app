@@ -49,7 +49,7 @@ const QuestionImage = ({ imageUrl, alt }: QuestionImageProps) => {
           </div>
         )}
         <div 
-          className={`overflow-hidden rounded-2xl transition-all duration-300 ease-in-out ${isZoomed ? 'fixed inset-4 sm:inset-10 md:inset-20 bg-black/90 flex items-center justify-center z-50' : 'relative shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-700'}`}
+          className={`overflow-hidden rounded-2xl transition-all duration-300 ease-in-out ${isZoomed ? 'fixed inset-2 sm:inset-10 md:inset-20 bg-black/90 flex items-center justify-center z-50' : 'relative shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-700'}`}
         >
           <Image
             src={`/${imageUrl}`}
@@ -57,7 +57,7 @@ const QuestionImage = ({ imageUrl, alt }: QuestionImageProps) => {
             width={1200}
             height={900}
             priority
-            className={`w-full h-auto transition-all duration-300 ease-in-out ${isZoomed ? 'max-h-full object-contain p-4' : 'max-h-64 sm:max-h-80 object-contain'} ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+            className={`w-full h-auto transition-all duration-300 ease-in-out ${isZoomed ? 'max-h-full object-contain p-2 sm:p-4' : 'max-h-48 sm:max-h-64 md:max-h-80 object-contain'} ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
             onLoad={() => setImageLoading(false)}
             onError={() => {
               console.error(`Failed to load image: ${imageUrl}`);
@@ -71,18 +71,18 @@ const QuestionImage = ({ imageUrl, alt }: QuestionImageProps) => {
                 e.stopPropagation();
                 setIsZoomed(false);
               }}
-              className="absolute top-4 right-4 p-2 rounded-full bg-gray-800/80 text-white hover:bg-gray-700/80 transition-colors"
+              className="absolute top-2 sm:top-4 right-2 sm:right-4 p-1.5 sm:p-2 rounded-full bg-gray-800/80 text-white hover:bg-gray-700/80 transition-colors"
               aria-label="Close fullscreen image"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           )}
         </div>
         {!imageLoading && !isZoomed && (
-          <div className="absolute bottom-2 right-2 p-1.5 rounded-full bg-gray-800/60 text-white text-xs hidden sm:block">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="absolute bottom-2 right-2 p-1.5 rounded-full bg-gray-800/70 text-white text-xs block">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
             </svg>
           </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from "react";
+import Link from "next/link";
 import { registerServiceWorker } from "../utils/registerSW";
 import QuestionImage from "../components/QuestionImage";
 import AITutor from "../components/AITutor";
@@ -366,18 +367,38 @@ export default function DrivingQuizApp() {
     <div className="min-h-screen bg-gray-950 text-white relative">
       {showSplash && <SplashScreen />}
       
+      {/* Floating Book Icon - Only visible before quiz starts */}
+      {useMemo(() => {
+        if (stage !== 'start') return null;
+        
+        return (
+          <div className="fixed top-3 left-3 z-50 group">
+            <Link 
+              href="/blog"
+              className="bg-blue-900/90 rounded-full p-2 border border-blue-700 shadow-lg hover:bg-blue-800/90 transition-colors flex items-center justify-center"
+              title="Visit our Blog"
+            >
+              <span className="text-sm sm:text-xl">📚</span>
+            </Link>
+            <div className="absolute left-0 top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded py-1 px-2 pointer-events-none whitespace-nowrap">
+              Visit our Blog
+            </div>
+          </div>
+        );
+      }, [stage])}
+      
       {/* Floating Trophy Icon - Memoized to prevent unnecessary re-renders */}
       {useMemo(() => {
         if (stage !== 'result') return null;
         
         return (
-          <div className="fixed top-4 right-4 z-50">
+          <div className="fixed top-3 right-3 z-50">
             <button 
               onClick={() => setShowLeaderboard(prev => !prev)}
-              className="bg-blue-900/90 rounded-full p-3 border border-blue-700 shadow-lg hover:bg-blue-800/90 transition-colors"
+              className="bg-blue-900/90 rounded-full p-2 border border-blue-700 shadow-lg hover:bg-blue-800/90 transition-colors"
               title="View leaderboard"
             >
-              <span className="text-xl">🏆</span>
+              <span className="text-sm sm:text-xl">🏆</span>
             </button>
           </div>
         );
@@ -388,14 +409,14 @@ export default function DrivingQuizApp() {
         if (!showLeaderboard || stage !== 'result') return null;
         
         return (
-          <div className="fixed top-16 left-0 right-0 z-50 mx-auto max-w-md bg-blue-900/90 rounded-lg border border-blue-700 shadow-lg p-4 animate-fade-in">
+          <div className="fixed top-12 left-2 right-2 sm:left-0 sm:right-0 z-50 mx-auto max-w-md bg-blue-900/90 rounded-lg border border-blue-700 shadow-lg p-3 sm:p-4 animate-fade-in">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-base font-semibold text-white flex items-center">
-                <span className="mr-2">🏆</span> Leaderboard
+              <h3 className="text-sm sm:text-base font-semibold text-white flex items-center">
+                <span className="mr-1 sm:mr-2">🏆</span> Leaderboard
               </h3>
               <button 
                 onClick={() => setShowLeaderboard(false)}
-                className="text-gray-300 hover:text-white"
+                className="text-gray-300 hover:text-white text-sm sm:text-base p-1"
               >
                 ✕
               </button>

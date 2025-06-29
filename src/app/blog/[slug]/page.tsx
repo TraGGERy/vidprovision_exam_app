@@ -135,7 +135,7 @@ const blogPosts: BlogPost[] = [
     excerpt: 'That blinking light isn\'t just decoration. Learn what your car is trying to tell you before it\'s too late.',
     date: '2024-04-10',
     author: 'Robert Madziva',
-    imageUrl: '/image_p4_q1.png',
+    imageUrl: '/image_p5_q1.png',
     slug: 'dashboard-warning-lights',
     category: 'maintenance',
     content: `

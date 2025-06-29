@@ -68,7 +68,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7574084780651527" crossOrigin="anonymous" strategy="afterInteractive" />
+        <meta name="google-adsense-account" content="ca-pub-7574084780651527" />
+        {/* Google AdSense script */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <meta name="application-name" content="VidApp - Zimbabwe Driving License Test Preparation" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />

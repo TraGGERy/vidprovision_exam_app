@@ -99,104 +99,88 @@ const blogPosts: BlogPost[] = [
       <h3>Zimbabwe-Specific Night Driving Considerations</h3>
       
       <ul>
-        <li>
-          <strong>Wildlife Awareness:</strong>
-          <p>Zimbabwe has abundant wildlife, and animals are often more active at dawn, dusk, and night. Be particularly vigilant on rural roads and near national parks or game reserves.</p>
-        </li>
-        
-        <li>
-          <strong>Unlit Vehicles and Pedestrians:</strong>
-          <p>In some areas, you may encounter vehicles without proper lighting or pedestrians walking along roadways without reflective clothing. Maintain vigilance, especially near populated areas.</p>
-        </li>
-        
-        <li>
-          <strong>Power Outages:</strong>
-          <p>Be prepared for areas where street lighting may be affected by power outages. Keep a flashlight in your vehicle for emergencies.</p>
-        </li>
-        
-        <li>
-          <strong>Security Considerations:</strong>
-          <p>In urban areas, be aware of security concerns when driving at night. Keep doors locked, windows up in high-risk areas, and be cautious at intersections, particularly when stopped.</p>
-        </li>
-      </ul>
+  <li>
+    <strong>Wildlife Awareness:</strong> Zimbabwe has abundant wildlife, and animals are often more active at dawn, dusk, and night. Be particularly vigilant on rural roads and near national parks or game reserves.
+  </li>
+  <li>
+    <strong>Unlit Vehicles and Pedestrians:</strong> In some areas, you may encounter vehicles without proper lighting or pedestrians walking along roadways without reflective clothing. Maintain vigilance, especially near populated areas.
+  </li>
+  <li>
+    <strong>Power Outages:</strong> Be prepared for areas where street lighting may be affected by power outages. Keep a flashlight in your vehicle for emergencies.
+  </li>
+  <li>
+    <strong>Security Considerations:</strong> In urban areas, be aware of security concerns when driving at night. Keep doors locked, windows up in high-risk areas, and be cautious at intersections, particularly when stopped.
+  </li>
+</ul>
       
       <h3>Managing Fatigue</h3>
       
       <p>Driver fatigue is particularly dangerous at night. To combat fatigue:</p>
       
       <ul>
-        <li>Ensure you're well-rested before beginning a night journey.</li>
-        <li>Take regular breaks—at least every two hours or 100 kilometers.</li>
-        <li>If possible, share driving responsibilities with another licensed driver.</li>
-        <li>Recognize the signs of fatigue (heavy eyelids, disconnected thoughts, missing exits or road signs) and stop immediately if you notice them.</li>
-        <li>Avoid heavy meals before or during your journey, as they can contribute to drowsiness.</li>
-        <li>Stay hydrated, but limit caffeine intake to avoid the subsequent "crash."</li>
-      </ul>
+  <li>Ensure you're well-rested before beginning a night journey.</li>
+  <li>Take regular breaks—at least every two hours or 100 kilometers.</li>
+  <li>If possible, share driving responsibilities with another licensed driver.</li>
+  <li>Recognize the signs of fatigue (heavy eyelids, disconnected thoughts, missing exits or road signs) and stop immediately if you notice them.</li>
+  <li>Avoid heavy meals before or during your journey, as they can contribute to drowsiness.</li>
+  <li>Stay hydrated, but limit caffeine intake to avoid the subsequent "crash."</li>
+</ul>
       
       <p>By applying these night driving techniques and being aware of the specific challenges of driving after dark in Zimbabwe, you can significantly reduce your risk and make your night journeys safer for yourself and others on the road.</p>
     `
   },
   {
     id: '7',
-    title: 'Understanding Your Vehicle\'s Dashboard Warning Lights',
-    excerpt: 'Those mysterious symbols on your dashboard are trying to tell you something important. Learn what each warning light means.',
+    title: 'Dashboard Lights: Your Car\'s Way of Talking to You',
+    excerpt: 'That blinking light isn\'t just decoration. Learn what your car is trying to tell you before it\'s too late.',
     date: '2024-04-10',
-    author: 'Mechanic Mike',
+    author: 'Robert Madziva',
     imageUrl: '/image_p4_q1.png',
     slug: 'dashboard-warning-lights',
     category: 'maintenance',
     content: `
-      <p>Modern vehicles are equipped with sophisticated computer systems that monitor virtually every aspect of your car's performance. When something isn't working correctly, your vehicle communicates this through dashboard warning lights. Understanding these signals is crucial for maintaining your vehicle's health and ensuring your safety on the road.</p>
+      <p>Your car is basically a computer on wheels, and when something goes wrong, it tries to tell you through those little lights on your dashboard. Think of them as your car's way of saying "Hey, we need to talk!" Here's how to decode what your car is really trying to say.</p>
       
-      <h3>Critical Warning Lights (Red)</h3>
+      <h3>Red Lights = STOP Everything!</h3>
       
-      <p>Red warning lights indicate serious issues that require immediate attention. If you see any of these lights while driving, you should safely pull over as soon as possible and address the issue before continuing:</p>
+      <p>When you see red, think danger. These lights mean "pull over now or risk serious damage":</p>
       
       <ul>
-        <li>
-          <strong>Engine Temperature Warning:</strong>
-          <p>This light, often showing a thermometer or wavy lines in liquid, indicates that your engine is overheating. Continuing to drive can cause severe engine damage. Pull over, turn off the engine, and allow it to cool before checking coolant levels (once the engine has cooled).</p>
-        </li>
-        
-        <li>
-          <strong>Oil Pressure Warning:</strong>
-          <p>This light, typically shaped like an oil can or lamp, indicates low oil pressure, which can cause catastrophic engine damage within minutes. Stop driving immediately and check your oil level. If it's low, adding oil might resolve the issue, but if the light remains on, professional assistance is needed.</p>
-        </li>
-        
-        <li>
-          <strong>Battery/Charging System Warning:</strong>
-          <p>This light, usually shaped like a battery, indicates a problem with your vehicle's charging system. Your vehicle may soon lose electrical power and stall. Try to reach a service station before this happens.</p>
-        </li>
-        
-        <li>
-          <strong>Brake System Warning:</strong>
-          <p>This light, often showing an exclamation point within a circle of parentheses, indicates a problem with your braking system. It could mean low brake fluid, a hydraulic pressure problem, or an engaged parking brake. Check that your parking brake is fully released; if the light remains on, professional inspection is necessary.</p>
-        </li>
-        
-        <li>
-          <strong>Airbag/SRS Warning:</strong>
-          <p>This light, showing an airbag symbol, indicates a problem with your airbag system. While you can continue driving, your airbags may not deploy in an accident, so get this checked as soon as possible.</p>
-        </li>
-      </ul>
+  <li>
+    <strong>Engine Temperature (Thermometer Icon):</strong> Your engine is cooking itself. Stop immediately, turn off the car, and let it cool down. Driving with an overheated engine is like running a marathon with a fever – it won't end well.
+  </li>
+  <li>
+    <strong>Oil Pressure (Oil Can Icon):</strong> This is your engine's cry for help. No oil pressure = dead engine in minutes. Pull over, check your oil level, and if it's low, add some. If the light stays on, call for help.
+  </li>
+  <li>
+    <strong>Battery (Battery Icon):</strong> Your car's electrical system is failing. You might have just enough power to get to a garage, but don't count on it. Head to the nearest mechanic before you're stranded.
+  </li>
+  <li>
+    <strong>Brake Warning (Circle with Exclamation):</strong> Something's wrong with your brakes – the thing that stops your car! First, check if your handbrake is still on (we've all done it). If not, get this checked immediately.
+  </li>
+  <li>
+    <strong>Airbag Warning (Airbag Icon):</strong> Your airbags might not work in a crash. You can still drive, but get this fixed soon – your safety depends on it.
+  </li>
+</ul>
       
-      <h3>Amber/Yellow Warning Lights</h3>
+      <h3>Yellow/Orange Lights = Pay Attention Soon</h3>
       
-      <p>Amber or yellow lights typically indicate issues that need attention soon but aren't immediately dangerous:</p>
+      <p>These are your car's way of saying "I'm not dying, but I need some TLC":</p>
       
       <ul>
         <li>
           <strong>Check Engine Light:</strong>
-          <p>This light, shaped like an engine outline or simply stating "CHECK," can indicate various issues from a loose gas cap to serious engine problems. If it's flashing, the problem is more serious and requires immediate attention. If steady, have it checked soon.</p>
+          <p>The most mysterious light of all. Could be anything from a loose gas cap to engine trouble. If it's flashing, it's serious – get help now. If it's steady, you have some time but don't ignore it.</p>
         </li>
         
         <li>
-          <strong>ABS Warning:</strong>
-          <p>This light, showing "ABS," indicates a problem with the anti-lock braking system. Your regular brakes should still work, but the anti-lock function may be compromised. Have this checked soon.</p>
+          <strong>ABS Light:</strong>
+          <p>Your anti-lock brakes aren't working, but your regular brakes are fine. You can still stop, just be extra careful in wet conditions.</p>
         </li>
         
         <li>
-          <strong>Tire Pressure Warning:</strong>
-          <p>This light, showing a tire cross-section with an exclamation point, indicates that one or more tires have pressure significantly different from the recommended level. Check and adjust your tire pressure soon.</p>
+          <strong>Tire Pressure (Tire with Exclamation):</strong>
+          <p>One or more of your tires needs air. Check them all and pump up the low ones. Proper tire pressure saves fuel and prevents blowouts.</p>
         </li>
         
         <li><strong>Traction Control/Stability Control Warning:</strong> This light, often showing a car with skid marks, indicates that the traction control system is either engaged (flashing) or has a malfunction (steady). If steady, have it checked soon.</li>
@@ -254,30 +238,30 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: '8',
-    title: 'How to Drive Safely in Heavy Rain',
-    excerpt: 'Zimbabwe\'s rainy season can create hazardous driving conditions. These tips will help you navigate safely when the downpours begin.',
+    title: 'Driving in the Rain: Don\'t Let Water Ruin Your Day',
+    excerpt: 'Rain doesn\'t have to be scary. Learn the tricks that keep you safe when the roads get slippery.',
     date: '2024-04-05',
-    author: 'Captain Roadwise',
+    author: 'Sarah Chikwanha',
     imageUrl: '/image_p6_q1.png',
     slug: 'driving-in-rain',
     category: 'safety',
     content: `
-      <p>Zimbabwe's rainy season, typically running from November to March, can transform familiar roads into challenging and potentially dangerous driving environments. Heavy rainfall reduces visibility, decreases tire traction, and increases stopping distances. By understanding these challenges and adopting appropriate driving techniques, you can significantly reduce your risk of accidents during wet weather.</p>
+      <p>Rain can turn your familiar route into a slippery nightmare. But with the right techniques, you can drive confidently even when the heavens open up. Here's how to stay safe when Mother Nature decides to test your driving skills.</p>
       
-      <h3>Before You Drive in Rain</h3>
+      <h3>Get Ready Before You Go</h3>
       
-      <p>Preparation is key to safe rainy weather driving:</p>
+      <p>A little prep goes a long way when rain is coming:</p>
       
       <ul>
-        <li><strong>Check Your Wipers:</strong> Ensure your windshield wipers are in good condition and functioning properly. Wiper blades should be replaced every 6-12 months, or sooner if they leave streaks or miss areas.</li>
+        <li><strong>Check Your Wipers:</strong> If they're leaving streaks or making noise, replace them. You'll need clear vision when it's pouring.</li>
         
-        <li><strong>Inspect Your Tires:</strong> Check tire tread depth and pressure. The legal minimum tread depth is 1.6mm, but for rainy conditions, having at least 3mm provides significantly better traction. Proper inflation is also crucial for preventing hydroplaning.</li>
+        <li><strong>Look at Your Tires:</strong> Bald tires and rain don't mix. You need good tread to grip wet roads – at least 3mm is ideal.</li>
         
-        <li><strong>Test Your Lights:</strong> Ensure all exterior lights are working properly. You'll need them for visibility in heavy rain, even during daylight hours.</li>
+        <li><strong>Test Your Lights:</strong> You'll need them even during the day when it's raining hard. Make sure they all work.</li>
         
-        <li><strong>Clear All Windows:</strong> Make sure your windshield, windows, and mirrors are clean inside and out. Dirt and oil films can severely reduce visibility when wet.</li>
+        <li><strong>Clean Your Windows:</strong> Inside and out. Dirty glass becomes a real problem when water hits it.</li>
         
-        <li><strong>Plan Your Route:</strong> If possible, plan to avoid areas prone to flooding or roads with poor drainage. In Zimbabwe, low-lying bridges and roads near rivers can become particularly hazardous during heavy rains.</li>
+        <li><strong>Know Your Route:</strong> Avoid low-lying areas and bridges that flood easily. In Zimbabwe, some spots turn into rivers during heavy rain.</li>
       </ul>
       
       <h3>Essential Rainy Weather Driving Techniques</h3>
@@ -315,94 +299,49 @@ const blogPosts: BlogPost[] = [
       <p>During Zimbabwe's rainy season, flash flooding can occur rapidly. When encountering flooded roads:</p>
       
       <ul>
-        <li><strong>Assess the Depth:</strong> Never drive through water if you can't determine its depth. As a general rule, avoid water that's more than 15-20 cm deep.</li>
-        
-        <li><strong>Look for Indicators:</strong> Check for debris, current, or submerged obstacles. Moving water can be particularly dangerous—even 15 cm of moving water can float some vehicles.</li>
-        
-        <li>
-          <strong>If You Must Cross:</strong>
-          <p>Drive slowly (about 5 km/h) in first gear (manual) or low gear (automatic). Maintain steady throttle to create a bow wave in front of the vehicle.</p>
-        </li>
-        
-        <li>
-          <strong>After Crossing:</strong>
-          <p>Test your brakes repeatedly at low speed to dry them out.</p>
-        </li>
-        
-        <li>
-          <strong>When in Doubt, Turn Around:</strong>
-          <p>Remember the safety mantra: "Turn Around, Don't Drown." No journey is worth risking your life.</p>
-        </li>
-      </ul>
+  <li><strong>Assess the Depth:</strong> Never drive through water if you can't determine its depth. As a general rule, avoid water that's more than 15-20 cm deep.</li>
+  <li><strong>Look for Indicators:</strong> Check for debris, current, or submerged obstacles. Moving water can be particularly dangerous—even 15 cm of moving water can float some vehicles.</li>
+  <li><strong>If You Must Cross:</strong> Drive slowly (about 5 km/h) in first gear (manual) or low gear (automatic). Maintain steady throttle to create a bow wave in front of the vehicle.</li>
+  <li><strong>After Crossing:</strong> Test your brakes repeatedly at low speed to dry them out.</li>
+  <li><strong>When in Doubt, Turn Around:</strong> Remember the safety mantra: "Turn Around, Don't Drown." No journey is worth risking your life.</li>
+</ul>
       
       <h3>Zimbabwe-Specific Rainy Season Considerations</h3>
       
       <ul>
-        <li>
-          <strong>Unpaved Roads:</strong>
-          <p>Many rural roads in Zimbabwe are unpaved and can become extremely slippery or impassable during heavy rains. Consider postponing travel on these roads during the heaviest rainfall periods.</p>
-        </li>
-        
-        <li>
-          <strong>Bridge Crossings:</strong>
-          <p>Low-water bridges are common in rural areas and can be quickly submerged during flash floods. Never attempt to cross a flooded bridge.</p>
-        </li>
-        
-        <li>
-          <strong>Urban Flooding:</strong>
-          <p>Even in urban areas like Harare and Bulawayo, drainage systems can be overwhelmed during intense rainfall, leading to street flooding. Be particularly cautious in low-lying urban areas.</p>
-        </li>
-        
-        <li>
-          <strong>Lightning:</strong>
-          <p>Zimbabwe experiences significant lightning activity during thunderstorms. If caught in a severe thunderstorm with intense lightning, it's safer to pull over in a safe location away from trees until the worst passes.</p>
-        </li>
-      </ul>
+  <li><strong>Unpaved Roads:</strong> Many rural roads in Zimbabwe are unpaved and can become extremely slippery or impassable during heavy rains. Consider postponing travel on these roads during the heaviest rainfall periods.</li>
+  <li><strong>Bridge Crossings:</strong> Low-water bridges are common in rural areas and can be quickly submerged during flash floods. Never attempt to cross a flooded bridge.</li>
+  <li><strong>Urban Flooding:</strong> Even in urban areas like Harare and Bulawayo, drainage systems can be overwhelmed during intense rainfall, leading to street flooding. Be particularly cautious in low-lying urban areas.</li>
+  <li><strong>Lightning:</strong> Zimbabwe experiences significant lightning activity during thunderstorms. If caught in a severe thunderstorm with intense lightning, it's safer to pull over in a safe location away from trees until the worst passes.</li>
+</ul>
       
       <p>By adopting these rainy weather driving techniques and maintaining your vehicle properly, you can navigate Zimbabwe's rainy season safely. Remember that sometimes the safest decision is to delay your journey until weather conditions improve, particularly for long-distance travel during heavy rainfall.</p>
     `
   },
   {
     id: '9',
-    title: 'Essential Car Maintenance Tips for New Drivers',
-    excerpt: 'Regular maintenance extends your vehicle\'s life and prevents breakdowns. Learn the basics every driver should know.',
+    title: 'Car Care 101: Keep Your Ride Happy and Healthy',
+    excerpt: 'Your car takes care of you, so return the favor. Simple maintenance tips that save money and prevent roadside disasters.',
     date: '2024-03-28',
-    author: 'Mechanic Mike',
+    author: 'Mike Nyamande',
     imageUrl: '/image_p8_q1.png',
     slug: 'car-maintenance-basics',
     category: 'maintenance',
     content: `
-      <p>Proper vehicle maintenance is not just about preventing breakdowns—it's about safety, reliability, and protecting your investment. For new drivers, understanding basic maintenance can seem overwhelming, but mastering a few fundamentals can save you money and extend your vehicle's lifespan. This guide covers the essential maintenance tasks every driver should know.</p>
+      <p>Think of your car like a good friend – treat it well, and it'll take care of you. Ignore it, and you'll be calling for help from the roadside. Car maintenance isn't rocket science, and you don't need to be a mechanic to keep your ride running smoothly.</p>
       
-      <h3>Regular Checks You Can Do Yourself</h3>
+      <h3>Monthly Check-ups You Can Do in 10 Minutes</h3>
       
-      <p>These simple checks should become part of your routine, ideally performed at least once a month and before any long journey:</p>
+      <p>These quick checks once a month can save you from expensive surprises:</p>
       
       <ol>
-        <li>
-          <strong>Tire Pressure and Condition:</strong>
-          <p>Check tire pressure when tires are cold, using a reliable pressure gauge. The recommended pressure for your vehicle can be found in the owner's manual or on a sticker inside the driver's door jamb. While checking pressure, examine tires for wear, damage, or embedded objects. Don't forget to check the spare tire too.</p>
-        </li>
-        
-        <li>
-          <strong>Oil Level:</strong>
-          <p>With the engine off and the car parked on level ground, wait a few minutes for the oil to settle, then pull out the dipstick, wipe it clean, reinsert it fully, and check the level. The oil should be between the minimum and maximum marks and should appear clean, not dark and gritty.</p>
-        </li>
-        
-        <li>
-          <strong>Coolant Level:</strong>
-          <p>Check the coolant reservoir level when the engine is cold. The level should be between the minimum and maximum marks. Never open the radiator cap when the engine is hot—this can cause serious burns.</p>
-        </li>
-        
-        <li>
-          <strong>Windshield Washer Fluid:</strong>
-          <p>Keep this topped up, especially during dusty or rainy seasons. In Zimbabwe, where dust can be a significant issue in dry seasons, this is particularly important.</p>
-        </li>
-        
-        <li><strong>Lights and Signals:</strong> Regularly check that all exterior lights are functioning properly. This includes headlights (both high and low beam), brake lights, turn signals, and hazard lights. You may need someone to help you check brake lights.</li>
-        
-        <li><strong>Windshield Wipers:</strong> Inspect wiper blades for cracks, stiffness, or damage. Replace them if they leave streaks or miss areas when operating.</li>
-      </ol>
+  <li><strong>Tire Pressure (The Foundation of Everything):</strong> Check when your tires are cold – first thing in the morning is perfect. The right pressure is usually on a sticker inside your driver's door. While you're at it, look for any nails, cuts, or weird wear patterns. Don't forget your spare – you'll thank me later.</li>
+  <li><strong>Oil Level (Your Engine's Lifeblood):</strong> Park on level ground, turn off the engine, wait 5 minutes, then check the dipstick. Pull it out, wipe it clean, put it back in, then check again. The oil should be between the min and max marks and look relatively clean, not like black sludge.</li>
+  <li><strong>Coolant Level (Keep Your Cool):</strong> Only check when the engine is cold! Look at the plastic reservoir – the level should be between the marks. Never, ever open the radiator cap when hot unless you want a trip to the hospital.</li>
+  <li><strong>Windshield Washer Fluid:</strong> Keep this topped up, especially in Zimbabwe where dust is everywhere during dry season. You'll use more than you think.</li>
+  <li><strong>Lights and Signals:</strong> Regularly check that all exterior lights are functioning properly. This includes headlights (both high and low beam), brake lights, turn signals, and hazard lights. You may need someone to help you check brake lights.</li>
+  <li><strong>Windshield Wipers:</strong> Inspect wiper blades for cracks, stiffness, or damage. Replace them if they leave streaks or miss areas when operating.</li>
+</ol>
       
       <h3>Scheduled Maintenance Tasks</h3>
       
@@ -486,17 +425,17 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: '10',
-    title: 'Mastering the Three-Point Turn',
-    excerpt: 'The three-point turn is a fundamental driving maneuver. Learn how to execute it perfectly every time.',
+    title: 'The Three-Point Turn: Your Get-Out-of-Jail-Free Card',
+    excerpt: 'Stuck in a dead end? No problem. Master this move and you\'ll never be trapped again.',
     date: '2024-03-20',
-    author: 'Professor Drive',
+    author: 'David Mukamuri',
     imageUrl: '/image_p9_q1.png',
     slug: 'three-point-turn',
     category: 'techniques',
     content: `
-      <p>The three-point turn (sometimes called a Y-turn or K-turn) is an essential driving maneuver that allows you to reverse your direction of travel in a limited space. Mastering this technique is not only important for your driving test but also for everyday driving situations where you need to turn around safely and efficiently.</p>
+      <p>We've all been there – you're driving along, miss your turn, and suddenly find yourself in a dead-end street with nowhere to go. Enter the three-point turn, your escape route from embarrassing driving moments. It's like a U-turn's more careful cousin.</p>
       
-      <h3>When to Use a Three-Point Turn</h3>
+      <h3>When You Need This Life-Saving Move</h3>
       
       <p>A three-point turn is appropriate when:</p>
       

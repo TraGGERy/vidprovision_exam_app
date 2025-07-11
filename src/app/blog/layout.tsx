@@ -11,10 +11,10 @@ export const metadata: Metadata = {
     siteName: "VidApp",
     images: [{
       // Replace OpenGraph image reference
-      url: "/icons/icon-2.png",
-      width: 512,
-      height: 512,
-      alt: "VidApp Logo"
+      url: "/screenshots/screenshot1.png",
+      width: 1200,
+      height: 630,
+      alt: "VidApp Screenshot"
     }]
   },
   twitter: {
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     title: "Driving Knowledge Blog - VidApp",
     description: "Expert advice, tips, and insights to help you become a safer and more confident driver.",
     // Replace Twitter card image reference
-    images: ["/icons/icon-2.png"]
+    images: ["/screenshots/screenshot1.png"]
   },
   alternates: {
     canonical: "https://vidapp.vercel.app/blog"

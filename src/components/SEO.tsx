@@ -17,7 +17,7 @@ export default function SEO({
   description = 'Prepare for your Zimbabwe driving license test with our comprehensive quiz app featuring practice tests, study mode, and AI tutor assistance.',
   keywords = 'Zimbabwe driving license, driving test preparation, driving quiz app, road rules Zimbabwe',
   // Update default OpenGraph image
-  ogImage = '/icons/icon-2.png',
+  ogImage = '/screenshots/screenshot1.png',
   ogType = 'website',
   twitterCard = 'summary_large_image',
 }: SEOProps) {

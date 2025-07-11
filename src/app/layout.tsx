@@ -44,17 +44,17 @@ export const metadata: Metadata = {
     siteName: "Permetly",
     images: [{
       // Replace OpenGraph image reference
-      url: "/icons/icon-2.png",
-      width: 512,
-      height: 512,
-      alt: "VidApp Logo"
+      url: "/screenshots/screenshot1.png",
+      width: 1200,
+      height: 630,
+      alt: "VidApp Screenshot"
     }]
   },
   twitter: {
     card: "summary_large_image",
     title: "VidApp - Zimbabwe Driving License Test Preparation",
     description: "Prepare for your Zimbabwe driving license test with our comprehensive quiz app.",
-    images: ["/icons/icon-2.png"]
+    images: ["/screenshots/screenshot1.png"]
   },
   alternates: {
     canonical: "https://vidapp.vercel.app"
@@ -85,10 +85,12 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#000000" />
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="theme-color" content="#000000" />
-        
+
         <link rel="apple-touch-icon" href="/icons/icon-2.png" />
         <link rel="shortcut icon" href="/icons/icon-2.png" />
         <link rel="icon" type="image/png" href="/icons/icon-2.png" />
+        
+        {/* Twitter Card data */}
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="language" content="en" />
@@ -99,9 +101,9 @@ export default function RootLayout({
         <meta name="distribution" content="global" />
         <meta name="geo.region" content="ZW" />
         <meta name="geo.placename" content="Zimbabwe" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
-        <link rel="shortcut icon" href="/icons/icon-192x192.svg" />
-        <link rel="icon" type="image/svg+xml" href="/icons/icon-192x192.svg" />
+        <link rel="apple-touch-icon" href="/icons/icon-2.png" />
+        <link rel="shortcut icon" href="/icons/icon-2.png" />
+        <link rel="icon" type="image/png" href="/icons/icon-2.png" />
         <link rel="canonical" href="https://vidapp.vercel.app" />
         <script type="application/ld+json">
           {`

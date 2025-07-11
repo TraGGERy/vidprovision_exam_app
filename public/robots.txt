@@ -3,5 +3,5 @@ User-agent: *
 Allow: /
 
 # Sitemap locations
-Sitemap: https://vidapp.vercel.app/sitemap.xml
-Sitemap: https://vidapp.vercel.app/api/sitemap
+Sitemap: https://permitly.wiki/sitemap.xml
+Sitemap: https://permitly.wiki/api/sitemap

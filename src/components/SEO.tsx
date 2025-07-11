@@ -22,7 +22,7 @@ export default function SEO({
   twitterCard = 'summary_large_image',
 }: SEOProps) {
   const pathname = usePathname();
-  const baseUrl = 'https://vidapp.vercel.app';
+  const baseUrl = 'https://permitly.wiki';
   const currentUrl = `${baseUrl}${pathname}`;
 
   return (

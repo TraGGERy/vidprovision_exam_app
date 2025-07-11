@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Driving Knowledge Blog - VidApp",
     description: "Expert advice, tips, and insights to help you become a safer and more confident driver.",
-    url: "https://vidapp.vercel.app/blog",
+    url: "https://permitly.wiki/blog",
     siteName: "VidApp",
     images: [{
       // Replace OpenGraph image reference
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     images: ["/screenshots/screenshot1.png"]
   },
   alternates: {
-    canonical: "https://vidapp.vercel.app/blog"
+    canonical: "https://permitly.wiki/blog"
   }
 };
 

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://vidapp.vercel.app';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://permitly.wiki';
 const outputPath = path.join(process.cwd(), 'public', 'sitemap.xml');
 
 // Get current date in YYYY-MM-DD format

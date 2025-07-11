@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://vidapp.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://permitly.wiki';
   
   // Generate the sitemap XML
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

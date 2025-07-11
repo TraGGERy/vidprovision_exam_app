@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   applicationName: "Permetly",
   openGraph: {
     type: "website",
-    url: "https://vidapp.vercel.app",
+    url: "https://permitly.wiki",
     title: "VidApp - Zimbabwe Driving License Test Preparation",
     description: "Prepare for your Zimbabwe driving license test with our comprehensive quiz app featuring practice tests, study mode, and AI tutor assistance.",
     siteName: "Permetly",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     images: ["/screenshots/screenshot1.png"]
   },
   alternates: {
-    canonical: "https://vidapp.vercel.app"
+    canonical: "https://permitly.wiki"
   }
 };
 
@@ -104,7 +104,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-2.png" />
         <link rel="shortcut icon" href="/icons/icon-2.png" />
         <link rel="icon" type="image/png" href="/icons/icon-2.png" />
-        <link rel="canonical" href="https://vidapp.vercel.app" />
+        <link rel="canonical" href="https://permitly.wiki" />
         <script type="application/ld+json">
           {`
             {
@@ -124,16 +124,16 @@ export default function RootLayout({
                 "ratingCount": "120"
               },
               "description": "Prepare for your Zimbabwe driving license test with our comprehensive quiz app featuring practice tests, study mode, and AI tutor assistance.",
-              "screenshot": "https://vidapp.vercel.app/screenshots/screenshot1.png",
+              "screenshot": "https://permitly.wiki/screenshots/screenshot1.png",
               "softwareVersion": "1.0.0",
               "author": {
                 "@type": "Organization",
                 "name": "VidApp Team",
-                "url": "https://vidapp.vercel.app"
+                "url": "https://permitly.wiki"
               },
               "potentialAction": {
                 "@type": "UseAction",
-                "target": "https://vidapp.vercel.app"
+                "target": "https://permitly.wiki"
               }
             }
           `}
@@ -144,7 +144,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebApplication",
               "name": "VidApp - Zimbabwe Driving License Test Preparation",
-              "url": "https://vidapp.vercel.app",
+              "url": "https://permitly.wiki",
               "applicationCategory": "EducationApplication",
               "genre": "education",
               "browserRequirements": "Requires JavaScript. Requires HTML5.",

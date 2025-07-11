@@ -16,7 +16,8 @@ export default function SEO({
   title = 'VidApp - Zimbabwe Driving License Test Preparation',
   description = 'Prepare for your Zimbabwe driving license test with our comprehensive quiz app featuring practice tests, study mode, and AI tutor assistance.',
   keywords = 'Zimbabwe driving license, driving test preparation, driving quiz app, road rules Zimbabwe',
-  ogImage = '/icons/icon-512x512.svg',
+  // Update default OpenGraph image
+  ogImage = '/icons/icon-2.png',
   ogType = 'website',
   twitterCard = 'summary_large_image',
 }: SEOProps) {

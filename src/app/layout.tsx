@@ -31,19 +31,20 @@ export const metadata: Metadata = {
     userScalable: true
   },
   keywords: "Zimbabwe driving license, driving test preparation, driving quiz app, road rules Zimbabwe, traffic signs, PWA, driving exam, learner's license",
-  authors: [{ name: "VidApp Team" }],
-  creator: "VidApp Team",
+  authors: [{ name: "Mees Ai" }],
+  creator: "Mees Ai ",
   publisher: "VidApp",
   category: "Education",
-  applicationName: "VidApp",
+  applicationName: "Permetly",
   openGraph: {
     type: "website",
     url: "https://vidapp.vercel.app",
     title: "VidApp - Zimbabwe Driving License Test Preparation",
     description: "Prepare for your Zimbabwe driving license test with our comprehensive quiz app featuring practice tests, study mode, and AI tutor assistance.",
-    siteName: "VidApp",
+    siteName: "Permetly",
     images: [{
-      url: "/icons/icon-512x512.svg",
+      // Replace OpenGraph image reference
+      url: "/icons/icon-2.png",
       width: 512,
       height: 512,
       alt: "VidApp Logo"
@@ -53,7 +54,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "VidApp - Zimbabwe Driving License Test Preparation",
     description: "Prepare for your Zimbabwe driving license test with our comprehensive quiz app.",
-    images: ["/icons/icon-512x512.svg"]
+    images: ["/icons/icon-2.png"]
   },
   alternates: {
     canonical: "https://vidapp.vercel.app"
@@ -76,10 +77,18 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
-        <meta name="application-name" content="VidApp - Zimbabwe Driving License Test Preparation" />
+        <meta name="application-name" content="Permetly - Zimbabwe Driving License Test Preparation" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="VidApp - Zimbabwe Driving Test" />
+        <meta name="apple-mobile-web-app-title" content="VidApp" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-TileColor" content="#000000" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="theme-color" content="#000000" />
+        
+        <link rel="apple-touch-icon" href="/icons/icon-2.png" />
+        <link rel="shortcut icon" href="/icons/icon-2.png" />
+        <link rel="icon" type="image/png" href="/icons/icon-2.png" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="language" content="en" />

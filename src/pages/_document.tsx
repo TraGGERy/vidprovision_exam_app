@@ -32,7 +32,7 @@ class MyDocument extends Document {
           {/* Splash screens for iOS */}
           <link
             rel="apple-touch-startup-image"
-            href="/icons/icon-512x512.svg"
+            href="/icons/icon-2.png"
             media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
           />
         </Head>

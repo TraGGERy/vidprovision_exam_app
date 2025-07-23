@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import { registerServiceWorker } from "../utils/registerSW";
 import QuestionImage from "../components/QuestionImage";
@@ -340,16 +340,16 @@ export default function DrivingQuizApp() {
     }
   }, [currentQuestionIndex, questions, quizConfig.timeLimit, quizConfig.mode, userAnswers]);
 
-  const getScoreColor = (score: number, total: number) => {
+  const getScoreColor = useCallback((score: number, total: number) => {
     const percentage = (score / total) * 100;
     if (percentage >= 80) return 'text-green-400';
     if (percentage >= 70) return 'text-yellow-400';
     return 'text-red-400';
-  };
+  }, []);
 
   const getScoreMessage = useMemo(() => (score: number, total: number) => {
     const percentage = (score / total) * 100;
-    if (percentage >= 90) return 'Excellent! You\'re ready to drive safely!';
+    if (percentage >= 90) return 'Excellent! You&apos;re ready to drive safely!';
     if (percentage >= 80) return 'Great job! You have a good understanding of driving rules.';
     if (percentage >= 70) return 'Good work! Review the areas you missed.';
     if (percentage >= 60) return 'You\'re getting there! More study needed.';
@@ -520,7 +520,7 @@ export default function DrivingQuizApp() {
                     <span className="text-white font-medium">{platform}</span>
                   </div>
                   <p className="text-xs text-gray-400 mt-1">
-                    Detected from your device's user agent
+                    Detected from your device&apos;s user agent
                   </p>
                 </div>
                 
@@ -541,12 +541,12 @@ export default function DrivingQuizApp() {
                 
                 {/* Quick Actions */}
                 <div className="flex space-x-2">
-                  <a
+                  <Link
                     href="/blog"
                     className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-3 rounded-lg transition-colors text-center"
                   >
                     📚 Visit Blog
-                  </a>
+                  </Link>
                   <a
                     href="/content-policy"
                     className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-sm py-2 px-3 rounded-lg transition-colors text-center"
@@ -981,7 +981,7 @@ export default function DrivingQuizApp() {
             );
           }
           return null;
-        }, [currentQuestion, currentQuestionIndex, questions.length, score, showExplanation, timeLeft, selectedAnswer, isAnswerCorrect, quizConfig, handleAnswerSelect, nextQuestion, previousQuestion, stage])}
+        }, [currentQuestion, currentQuestionIndex, questions.length, score, showExplanation, timeLeft, totalTimeLeft, selectedAnswer, isAnswerCorrect, quizConfig, handleAnswerSelect, nextQuestion, previousQuestion, stage])}
 
         {/* Results Screen */}
         {useMemo(() => {

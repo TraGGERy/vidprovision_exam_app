@@ -7,7 +7,7 @@ import QuestionImage from "../components/QuestionImage";
 import AITutor from "../components/AITutor";
 import SplashScreen from "../components/SplashScreen";
 import LeaderboardTable from "../components/LeaderboardTable";
-import { PolicyCompliantContent } from "../components/ContentPolicy";
+import Header from "../components/Header";
 import { HeaderAd, ContentAd } from "../components/AdSenseAd";
 import { Question, getAllQuestions, getQuestionsByTest, getAllTestIds, shuffle } from "../utils/questionUtils";
 import { 
@@ -83,6 +83,7 @@ export default function DrivingQuizApp() {
   const [timeLeft, setTimeLeft] = useState(30);
   const [totalTimeLeft, setTotalTimeLeft] = useState(480); // 8 minutes for exam mode
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showSiteInfo, setShowSiteInfo] = useState(false);
   // Removed unused state variable: const [aiAdvice, setAiAdvice] = useState<string>('');
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
   // const [quizStartTime, setQuizStartTime] = useState<Date | null>(null); // Removed unused variable
@@ -369,21 +370,24 @@ export default function DrivingQuizApp() {
     <div className="min-h-screen bg-gray-950 text-white relative">
       {showSplash && <SplashScreen />}
       
-      {/* Floating Book Icon - Only visible before quiz starts */}
+      {/* Header - Always visible at the top */}
+      <Header />
+      
+      {/* Floating Info Icon - Only visible before quiz starts */}
       {useMemo(() => {
         if (stage !== 'start') return null;
         
         return (
           <div className="fixed top-3 left-3 z-50 group">
-            <Link 
-              href="/blog"
+            <button 
+              onClick={() => setShowSiteInfo(prev => !prev)}
               className="bg-blue-900/90 rounded-full p-2 border border-blue-700 shadow-lg hover:bg-blue-800/90 transition-colors flex items-center justify-center"
-              title="Visit our Blog"
+              title="Site Information"
             >
-              <span className="text-sm sm:text-xl">📚</span>
-            </Link>
+              <span className="text-sm sm:text-xl">ℹ️</span>
+            </button>
             <div className="absolute left-0 top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded py-1 px-2 pointer-events-none whitespace-nowrap">
-              Visit our Blog
+              Site Information
             </div>
           </div>
         );
@@ -427,20 +431,142 @@ export default function DrivingQuizApp() {
           </div>
         );
       }, [showLeaderboard, stage, score, questions])}
+      
+      {/* Site Information Modal - Memoized to prevent unnecessary re-renders */}
+      {useMemo(() => {
+        if (!showSiteInfo || stage !== 'start') return null;
+        
+        // Function to detect platform
+        const getPlatformInfo = () => {
+          const userAgent = navigator.userAgent.toLowerCase();
+          let platform = 'Unknown';
+          let icon = '💻';
+          
+          if (userAgent.includes('android')) {
+            platform = 'Android';
+            icon = '📱';
+          } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+            platform = 'iOS';
+            icon = '📱';
+          } else if (userAgent.includes('windows')) {
+            platform = 'Windows';
+            icon = '💻';
+          } else if (userAgent.includes('mac')) {
+            platform = 'macOS';
+            icon = '💻';
+          } else if (userAgent.includes('linux')) {
+            platform = 'Linux';
+            icon = '💻';
+          }
+          
+          return { platform, icon };
+        };
+        
+        const { platform, icon } = getPlatformInfo();
+        const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+        
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+            <div className="bg-gray-900 rounded-xl border border-gray-700 shadow-2xl p-4 sm:p-6 max-w-md mx-4 w-full">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg sm:text-xl font-semibold text-white flex items-center">
+                  <span className="mr-2">ℹ️</span> Site Information
+                </h3>
+                <button 
+                  onClick={() => setShowSiteInfo(false)}
+                  className="text-gray-400 hover:text-white text-xl p-1 rounded-full hover:bg-gray-800 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Site URL */}
+                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                  <h4 className="text-sm font-medium text-blue-400 mb-2 flex items-center">
+                    <span className="mr-2">🌐</span> Current URL
+                  </h4>
+                  <div className="bg-gray-900 rounded p-2 border border-gray-600">
+                    <code className="text-xs sm:text-sm text-green-400 break-all">{currentUrl}</code>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: 'VidApp - Zimbabwe Driving License Quiz',
+                          text: 'Check out this driving license quiz app!',
+                          url: currentUrl,
+                        })
+                        .catch(err => console.error('Error sharing:', err));
+                      } else {
+                        // Fallback for browsers that don't support Web Share API
+                        navigator.clipboard?.writeText(currentUrl);
+                        alert('URL copied to clipboard!');
+                      }
+                    }}
+                    className="mt-2 text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                  >
+                    🔗 Share
+                  </button>
+                </div>
+                
+                {/* Platform Information */}
+                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                  <h4 className="text-sm font-medium text-purple-400 mb-2 flex items-center">
+                    <span className="mr-2">{icon}</span> Your Platform
+                  </h4>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-2xl">{icon}</span>
+                    <span className="text-white font-medium">{platform}</span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Detected from your device's user agent
+                  </p>
+                </div>
+                
+                {/* App Information */}
+                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                  <h4 className="text-sm font-medium text-yellow-400 mb-2 flex items-center">
+                    <span className="mr-2">🚗</span> About VidApp
+                  </h4>
+                  <p className="text-sm text-gray-300 mb-2">
+                    Zimbabwe Driving License Quiz App
+                  </p>
+                  <div className="text-xs text-gray-400 space-y-1">
+                    <div>• Progressive Web App (PWA)</div>
+                    <div>• Works offline after first visit</div>
+                    <div>• Installable on your device</div>
+                  </div>
+                </div>
+                
+                {/* Quick Actions */}
+                <div className="flex space-x-2">
+                  <a
+                    href="/blog"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-3 rounded-lg transition-colors text-center"
+                  >
+                    📚 Visit Blog
+                  </a>
+                  <a
+                    href="/content-policy"
+                    className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-sm py-2 px-3 rounded-lg transition-colors text-center"
+                  >
+                    📋 Content Policy
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }, [showSiteInfo, stage])}
       <div className="container mx-auto py-4 sm:py-8 px-3 sm:px-4 max-w-4xl">
-        <div className="text-center mb-4 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">🚗 Driving License Quiz</h1>
-          <p className="text-sm sm:text-base text-gray-300">Test your knowledge of driving rules and regulations</p>
-        </div>
+        
 
         {/* Start Screen */}
         {stage === 'start' && (
           <>
             {/* Header Ad - Only shown with sufficient content */}
             <HeaderAd />
-            
-            {/* Content Enhancement for AdSense Policy Compliance */}
-            <PolicyCompliantContent page="home" />
             
             <div className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-800">
               <div className="mb-4 sm:mb-6 text-center">

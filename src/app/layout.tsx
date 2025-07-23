@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import PWAInstallContainer from "./pwa-install";
-import Script from "next/script";
+import AdSenseScript from "../components/AdSenseScript";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -71,19 +71,7 @@ export default function RootLayout({
       <head>
         <meta name="google-adsense-account" content="ca-pub-7574084780651527" />
         {/* Google AdSense script - Loaded conditionally based on content validation */}
-        <Script
-          id="adsense-script"
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7574084780651527"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-          onLoad={() => {
-            // Initialize AdSense after script loads
-            if (typeof window !== 'undefined') {
-              window.adsbygoogle = window.adsbygoogle || [];
-            }
-          }}
-        />
+        <AdSenseScript />
         <meta name="application-name" content="Permetly - Zimbabwe Driving License Test Preparation" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />

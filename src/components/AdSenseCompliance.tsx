@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 
 interface AdSenseComplianceProps {
   children: React.ReactNode;
-  minContentLength?: number;
   requiresSubstantialContent?: boolean;
 }
 
@@ -20,7 +19,6 @@ const validatePageContent = (element: HTMLElement): boolean => {
   // Check for substantial content elements
   const hasHeadings = element.querySelectorAll('h1, h2, h3, h4, h5, h6').length > 0;
   const hasParagraphs = element.querySelectorAll('p').length >= 3;
-  const hasLists = element.querySelectorAll('ul, ol').length > 0;
   
   return wordCount >= 300 && hasHeadings && hasParagraphs;
 };
@@ -36,7 +34,6 @@ const hasSubstantialContent = (): boolean => {
 // AdSense compliance wrapper component
 export default function AdSenseCompliance({ 
   children, 
-  minContentLength = 300,
   requiresSubstantialContent = true 
 }: AdSenseComplianceProps) {
   const [canShowAds, setCanShowAds] = useState(false);

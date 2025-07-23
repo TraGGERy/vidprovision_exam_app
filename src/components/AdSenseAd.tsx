@@ -99,9 +99,14 @@ export const FooterAd = () => (
   />
 );
 
+// AdSense configuration interface
+interface AdSenseConfig {
+  [key: string]: unknown;
+}
+
 // Declare global adsbygoogle for TypeScript
 declare global {
   interface Window {
-    adsbygoogle: any[];
+    adsbygoogle: AdSenseConfig[];
   }
 }

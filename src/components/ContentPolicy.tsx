@@ -138,12 +138,12 @@ export const PolicyCompliantContent = ({ page }: { page: string }) => {
                 <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
                   Preparing for your Zimbabwe driving license test has never been easier. VidApp provides comprehensive 
                   study materials, practice tests, and AI-powered tutoring to help you pass your driving test on the first try. 
-                  Our platform is specifically designed for Zimbabwe's driving regulations and road rules.
+                  Our platform is specifically designed for Zimbabwe&apos;s driving regulations and road rules.
                 </p>
                 <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                  Whether you're a first-time driver or need to renew your license, our extensive question bank covers 
+                  Whether you&apos;re a first-time driver or need to renew your license, our extensive question bank covers 
                   all aspects of Zimbabwe driving laws, road signs, traffic regulations, and safe driving practices. 
-                  The Vehicle Inspection Department (VID) approved content ensures you're studying the most current and relevant material.
+                  The Vehicle Inspection Department (VID) approved content ensures you&apos;re studying the most current and relevant material.
                 </p>
               </section>
 
@@ -214,7 +214,7 @@ export const PolicyCompliantContent = ({ page }: { page: string }) => {
                   Why Choose VidApp for Your Driving Test Preparation?
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                  VidApp stands out as Zimbabwe's premier driving test preparation platform. Our content is regularly 
+                  VidApp stands out as Zimbabwe&apos;s premier driving test preparation platform. Our content is regularly 
                   updated to reflect the latest changes in driving laws and regulations. The platform has helped thousands 
                   of students pass their driving tests with confidence.
                 </p>
@@ -224,9 +224,105 @@ export const PolicyCompliantContent = ({ page }: { page: string }) => {
                   long-term, not just for the test day.
                 </p>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Start your journey to becoming a safe and confident driver today. With VidApp's comprehensive study 
-                  materials and proven teaching methods, you'll be well-prepared for both your written test and practical 
+                  Start your journey to becoming a safe and confident driver today. With VidApp&apos;s comprehensive study 
+                  materials and proven teaching methods, you&apos;ll be well-prepared for both your written test and practical 
                   driving examination.
+                </p>
+              </section>
+            </div>
+          </article>
+        );
+      
+      case 'content-policy':
+        return (
+          <article className="py-8 px-4">
+            <div className="max-w-4xl mx-auto">
+              <section className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4 text-white">
+                  Educational Content Excellence
+                </h2>
+                <p className="text-blue-100 mb-4 leading-relaxed">
+                  VidApp maintains the highest standards of educational content quality to ensure our users receive 
+                  comprehensive and accurate information for their Zimbabwe driving license preparation. Our content 
+                  policy framework ensures every page provides substantial educational value while maintaining 
+                  compliance with international web standards and advertising guidelines.
+                </p>
+                <p className="text-blue-100 mb-4 leading-relaxed">
+                  We believe that quality education should be accessible to everyone. Our platform combines traditional 
+                  learning methods with modern technology to create an engaging and effective study experience. Every 
+                  piece of content is carefully crafted to meet specific educational objectives and learning outcomes.
+                </p>
+              </section>
+
+              <section className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4 text-white">
+                  Content Development Process
+                </h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 text-blue-200">
+                      Research and Verification
+                    </h3>
+                    <ul className="space-y-2 text-blue-100">
+                      <li>• Collaboration with Zimbabwe VID officials and driving instructors</li>
+                      <li>• Regular updates based on latest traffic law changes</li>
+                      <li>• Cross-referencing with official Highway Code documentation</li>
+                      <li>• Expert review by certified driving education professionals</li>
+                      <li>• Continuous monitoring of regulatory updates and amendments</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 text-blue-200">
+                      Quality Assurance
+                    </h3>
+                    <ul className="space-y-2 text-blue-100">
+                      <li>• Multi-stage content review and editing process</li>
+                      <li>• Accuracy verification by subject matter experts</li>
+                      <li>• User testing and feedback incorporation</li>
+                      <li>• Regular content audits and updates</li>
+                      <li>• Performance analytics and improvement tracking</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
+              <section className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4 text-white">
+                  Learning Methodology
+                </h2>
+                <p className="text-blue-100 mb-4 leading-relaxed">
+                  Our educational approach is based on proven learning theories and methodologies. We employ spaced 
+                  repetition, active recall, and adaptive learning techniques to maximize knowledge retention and 
+                  understanding. The platform is designed to accommodate different learning styles and preferences.
+                </p>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+                  <h3 className="text-lg font-semibold mb-3 text-white">
+                    Key Learning Principles
+                  </h3>
+                  <ul className="space-y-2 text-blue-100">
+                    <li>• Progressive difficulty levels to build confidence gradually</li>
+                    <li>• Immediate feedback and detailed explanations for every question</li>
+                    <li>• Real-world scenarios and practical application examples</li>
+                    <li>• Visual learning aids including diagrams and interactive elements</li>
+                    <li>• Personalized learning paths based on individual progress</li>
+                    <li>• Comprehensive coverage of theoretical and practical knowledge</li>
+                  </ul>
+                </div>
+              </section>
+
+              <section className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4 text-white">
+                  Technology and Innovation
+                </h2>
+                <p className="text-blue-100 mb-4 leading-relaxed">
+                  VidApp leverages cutting-edge technology to enhance the learning experience. Our AI-powered tutor 
+                  provides personalized guidance, while our progressive web app technology ensures seamless access 
+                  across all devices. The platform is built with modern web standards and optimized for performance.
+                </p>
+                <p className="text-blue-100 mb-4 leading-relaxed">
+                  We continuously invest in research and development to improve our educational tools and methods. 
+                  Our development team works closely with educators and students to identify areas for improvement 
+                  and implement innovative solutions that enhance the learning experience.
                 </p>
               </section>
             </div>

@@ -7,6 +7,8 @@ import QuestionImage from "../components/QuestionImage";
 import AITutor from "../components/AITutor";
 import SplashScreen from "../components/SplashScreen";
 import LeaderboardTable from "../components/LeaderboardTable";
+import { PolicyCompliantContent } from "../components/ContentPolicy";
+import { HeaderAd, ContentAd } from "../components/AdSenseAd";
 import { Question, getAllQuestions, getQuestionsByTest, getAllTestIds, shuffle } from "../utils/questionUtils";
 import { 
   updateQuestionPerformance, 
@@ -433,12 +435,19 @@ export default function DrivingQuizApp() {
 
         {/* Start Screen */}
         {stage === 'start' && (
-          <div className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-800">
-            <div className="mb-4 sm:mb-6 text-center">
-              <div className="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4">🚦</div>
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Ready to Test Your Driving Knowledge?</h2>
-              <p className="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6">Configure your quiz below and test your driving knowledge!</p>
-            </div>
+          <>
+            {/* Header Ad - Only shown with sufficient content */}
+            <HeaderAd />
+            
+            {/* Content Enhancement for AdSense Policy Compliance */}
+            <PolicyCompliantContent page="home" />
+            
+            <div className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-800">
+              <div className="mb-4 sm:mb-6 text-center">
+                <div className="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4">🚦</div>
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Ready to Test Your Driving Knowledge?</h2>
+                <p className="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6">Configure your quiz below and test your driving knowledge!</p>
+              </div>
             
             <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
               <div>
@@ -668,6 +677,10 @@ export default function DrivingQuizApp() {
               </button>
             </div>
           </div>
+          
+          {/* Content Ad - Only shown with sufficient content */}
+          <ContentAd />
+          </>
         )}
 
         {/* Quiz Screen */}

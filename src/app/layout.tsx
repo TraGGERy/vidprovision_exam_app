@@ -70,12 +70,19 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="google-adsense-account" content="ca-pub-7574084780651527" />
-        {/* Google AdSense script */}
+        {/* Google AdSense script - Loaded conditionally based on content validation */}
         <Script
+          id="adsense-script"
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7574084780651527"
           crossOrigin="anonymous"
           strategy="afterInteractive"
+          onLoad={() => {
+            // Initialize AdSense after script loads
+            if (typeof window !== 'undefined') {
+              window.adsbygoogle = window.adsbygoogle || [];
+            }
+          }}
         />
         <meta name="application-name" content="Permetly - Zimbabwe Driving License Test Preparation" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

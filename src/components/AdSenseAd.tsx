@@ -22,16 +22,31 @@ export default function AdSenseAd({
   const adRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Only load ads if window and adsbygoogle are available
-    if (typeof window !== 'undefined' && window.adsbygoogle) {
+  const adElement = adRef.current;
+  if (!adElement || typeof window === 'undefined' || !window.adsbygoogle) return;
+
+  const checkWidthAndPush = () => {
+    if (adElement.offsetWidth > 0) {
       try {
-        // Push ad to AdSense queue
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       } catch (error) {
         console.error('AdSense error:', error);
       }
+      return true;
     }
-  }, []);
+    return false;
+  };
+
+  if (checkWidthAndPush()) return;
+
+  const interval = setInterval(() => {
+    if (checkWidthAndPush()) {
+      clearInterval(interval);
+    }
+  }, 100);
+
+  return () => clearInterval(interval);
+}, []);
 
   const AdComponent = () => (
     <div className={`adsense-container ${className}`} ref={adRef}>
@@ -40,7 +55,9 @@ export default function AdSenseAd({
         style={{
           ...adStyle,
           width: '100%',
-          height: 'auto'
+          minWidth: '250px',
+          height: 'auto',
+          minHeight: '100px'
         }}
         data-ad-client="ca-pub-7574084780651527"
         data-ad-slot={adSlot}

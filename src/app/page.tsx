@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
+import { useAuth, useUser } from "@clerk/nextjs";
+import { useRouter } from 'next/navigation';
 import { registerServiceWorker } from "../utils/registerSW";
 import QuestionImage from "../components/QuestionImage";
 import AITutor from "../components/AITutor";
@@ -43,6 +45,14 @@ interface QuizConfig {
 }
 
 export default function DrivingQuizApp() {
+  // Authentication check
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
+  const router = useRouter();
+  const metadata = user?.unsafeMetadata || {};
+  const subscribed = metadata.subscribed === true;
+  const attempts = (metadata.attempts as number) || 0;
+
   // Register service worker for PWA functionality
   useEffect(() => {
     registerServiceWorker();
@@ -101,7 +111,29 @@ export default function DrivingQuizApp() {
 
   // Timer effect is now consolidated in a single useEffect below
 
-  const startQuiz = useMemo(() => (config: QuizConfig = quizConfig) => {
+  const startQuiz = useMemo(() => async (config: QuizConfig = quizConfig) => {
+    if (!user) return;
+    
+    const metadata = user.publicMetadata || {};
+    const subscribed = metadata.subscribed === true;
+    let attempts = (metadata.attempts as number) || 0;
+    
+    if (!subscribed && (config.mode === 'random' || config.mode === 'study')) {
+      if (attempts >= 3) {
+    router.push('/payment');
+    return;
+  }
+      attempts++;
+      try {
+      await user.update({
+        unsafeMetadata: { ...metadata, attempts }
+      });
+    } catch (error) {
+      console.error('Error updating user metadata:', error);
+      // Optionally, show a user-friendly message or redirect
+      alert('An error occurred while updating your attempt count. Please try again.');
+    }
+    }
     // Get questions based on configuration
     let selectedQuestions: Question[] = [];
     let questionCount = config.questionCount;
@@ -194,6 +226,8 @@ export default function DrivingQuizApp() {
   }, [availableQuestions, quizConfig]);
 
   const handleAnswerSelect = useMemo(() => (option: string) => {
+    // Prevent multiple selections or clicks during explanation
+    if (selectedAnswer !== null || showExplanation) return;
     // Prevent multiple selections or clicks during explanation
     if (selectedAnswer !== null || showExplanation) return;
     
@@ -366,6 +400,463 @@ export default function DrivingQuizApp() {
 
   const currentQuestion = questions[currentQuestionIndex];
 
+  // Memoized quiz content to prevent unnecessary re-renders
+  const quizContent = useMemo(() => {
+    if (stage === 'quiz' && currentQuestion) {
+      return (
+        <div className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-800">
+          {/* Timer Display */}
+          <div className="flex justify-between items-center mb-4 sm:mb-6">
+            <div className="text-xs sm:text-sm text-gray-400">
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </div>
+            {quizConfig.mode === 'exam' ? (
+              <div className="text-xs sm:text-sm text-orange-400 font-medium">
+                Total Time: {Math.floor(totalTimeLeft / 60)}:{(totalTimeLeft % 60).toString().padStart(2, '0')}
+              </div>
+            ) : (
+              !quizConfig.allowUnlimitedTime && (
+                <div className={`text-xs sm:text-sm font-medium ${
+                  timeLeft <= 10 ? 'text-red-400 animate-pulse' : 'text-blue-400'
+                }`}>
+                  Time: {timeLeft}s
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Progress Bar */}
+          <div className="w-full bg-gray-700 rounded-full h-1 sm:h-2 mb-4 sm:mb-6">
+            <div 
+              className="bg-blue-600 h-1 sm:h-2 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+            ></div>
+          </div>
+
+          {/* Score Display */}
+          <div className="text-center mb-4 sm:mb-6">
+            <div className="text-lg sm:text-xl font-bold text-blue-400">
+              Score: {score} / {currentQuestionIndex + (showExplanation ? 1 : 0)}
+            </div>
+          </div>
+
+          {/* Question */}
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-base sm:text-xl font-semibold text-white mb-3 sm:mb-4 leading-relaxed px-1">
+              {currentQuestion.question_text}
+            </h2>
+
+            {/* Question Image */}
+            {currentQuestion.image_url && (
+              <QuestionImage 
+                imageUrl={currentQuestion.image_url} 
+                alt={`Question ${currentQuestionIndex + 1} illustration`}
+              />
+            )}
+
+            {/* Answer Options */}
+            <div className="space-y-1 sm:space-y-3">
+              {currentQuestion.options.map((option, index) => {
+                let buttonClass = "w-full p-2 sm:p-4 text-left rounded-lg border-2 transition-all duration-200 touch-manipulation text-xs sm:text-base ";
+                
+                if (showExplanation) {
+                  if (option === currentQuestion.correct_answer) {
+                    buttonClass += "border-green-500 bg-green-900 text-green-100";
+                  } else if (option === selectedAnswer && selectedAnswer !== currentQuestion.correct_answer) {
+                    buttonClass += "border-red-500 bg-red-900 text-red-100";
+                  } else {
+                    buttonClass += "border-gray-700 bg-gray-800 text-gray-400";
+                  }
+                } else {
+                  if (selectedAnswer === option) {
+                    buttonClass += "border-blue-500 bg-blue-900 text-blue-100";
+                  } else {
+                    buttonClass += "border-gray-700 bg-gray-800 text-white hover:border-blue-500 hover:bg-gray-700 active:bg-gray-600";
+                  }
+                }
+
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleAnswerSelect(option)}
+                    disabled={showExplanation}
+                    className={buttonClass}
+                  >
+                    <span className="font-medium mr-2 sm:mr-3">{String.fromCharCode(65 + index)}.</span>
+                    <span className="leading-relaxed">{option}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Explanation */}
+          {showExplanation && (
+            <div className={`mb-4 sm:mb-6 p-3 sm:p-4 ${quizConfig.mode === 'study' ? 'bg-green-900 border border-green-700' : 'bg-blue-900 border border-blue-700'} rounded-lg`}>
+              <h4 className={`font-semibold ${quizConfig.mode === 'study' ? 'text-green-100' : 'text-blue-100'} mb-2 text-sm sm:text-base`}>
+                {quizConfig.mode === 'study' ? '📚 Study Note:' : 'Correct Answer:'}
+              </h4>
+              <p className={`${quizConfig.mode === 'study' ? 'text-green-200' : 'text-blue-200'} text-sm sm:text-base leading-relaxed`}>
+                The correct answer is: <strong>{currentQuestion.correct_answer}</strong>
+              </p>
+              
+              {quizConfig.mode === 'study' && (
+                <div className="mt-3 pt-3 border-t border-green-700">
+                  <div className="flex items-center mb-2">
+                    <span className="mr-2 text-green-300">🔍</span>
+                    <h5 className="text-green-300 font-medium text-sm">Key Points to Remember:</h5>
+                  </div>
+                  <ul className="list-disc list-inside text-green-200 text-sm space-y-1 pl-1">
+                    <li>Pay attention to the specific road signs and markings shown</li>
+                    <li>Remember the right-of-way rules at intersections</li>
+                    <li>Consider safety implications of each possible action</li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* AI Tutor */}
+          {quizConfig.aiTutor && showExplanation && (
+            <AITutor
+              currentQuestion={currentQuestion}
+              userAnswer={selectedAnswer}
+              isCorrect={isAnswerCorrect}
+              onAdvice={handleAiAdvice}
+              gameMode={quizConfig.gameMode}
+              characterName={quizConfig.characterName}
+              showDetailedExplanations={quizConfig.showDetailedExplanations}
+              focusOnZimbabweLaws={quizConfig.focusOnZimbabweLaws}
+            />
+          )}
+
+          {/* Navigation Buttons */}
+          {showExplanation && (
+            <div className="flex justify-center gap-3 mt-3 sm:mt-4">
+              {currentQuestionIndex > 0 && (
+                <button
+                  onClick={previousQuestion}
+                  className="bg-gray-600 hover:bg-gray-700 active:bg-gray-800 text-white font-bold py-2 sm:py-3 px-3 sm:px-6 rounded-lg transition-colors duration-200 touch-manipulation text-xs sm:text-base border border-gray-500 sm:w-auto"
+                >
+                  Previous Question
+                </button>
+              )}
+              <button
+                onClick={nextQuestion}
+                className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2 sm:py-3 px-3 sm:px-6 rounded-lg transition-colors duration-200 touch-manipulation text-xs sm:text-base border border-blue-500 sm:w-auto"
+              >
+                {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'View Results'}
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+    return null;
+  }, [currentQuestion, currentQuestionIndex, questions.length, score, showExplanation, timeLeft, totalTimeLeft, selectedAnswer, isAnswerCorrect, quizConfig, handleAnswerSelect, nextQuestion, previousQuestion, stage]);
+
+  // Memoized results content
+  const resultsContent = useMemo(() => {
+    if (stage === 'result') {
+      return (
+        <div className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 text-center border border-gray-800">
+          <div className="mb-4 sm:mb-6">
+            <div className="text-3xl sm:text-5xl md:text-6xl mb-3 sm:mb-4">
+              {score >= questions.length * 0.8 ? '🎉' : score >= questions.length * 0.7 ? '👍' : '📚'}
+            </div>
+            <h2 className="text-xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">Quiz Complete!</h2>
+            <div className={`text-2xl sm:text-4xl font-bold mb-3 sm:mb-4 ${getScoreColor(score, questions.length)}`}>
+              {score} / {questions.length}
+            </div>
+            <div className={`text-base sm:text-xl mb-3 sm:mb-4 ${getScoreColor(score, questions.length)}`}>
+              {Math.round((score / questions.length) * 100)}%
+            </div>
+            <p className="text-gray-300 text-sm sm:text-lg mb-4 sm:mb-6 leading-relaxed px-2">
+              {getScoreMessage(score, questions.length)}
+            </p>
+          </div>
+
+          {/* Performance Breakdown */}
+          <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gray-800 rounded-lg border border-gray-700">
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-4">Performance Summary</h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="text-center">
+                <div className="text-xl sm:text-2xl font-bold text-green-400">{score}</div>
+                <div className="text-gray-300">Correct</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl sm:text-2xl font-bold text-red-400">{questions.length - score}</div>
+                <div className="text-gray-300">Incorrect</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Zimbabwe Study Resources - Only shown when Zimbabwe focus is enabled */}
+          {quizConfig.focusOnZimbabweLaws && (
+            <div className="mb-6 p-6 bg-green-900/30 border border-green-700 rounded-lg text-left">
+              <h3 className="text-xl font-bold mb-3 flex items-center">
+                <span className="mr-2">🇿🇼</span> Zimbabwe Driving Resources
+              </h3>
+              <p className="mb-4 text-green-100">Continue your study with these official Zimbabwe driving resources:</p>
+              
+              <ul className="list-disc pl-5 mb-4 text-green-100 space-y-2">
+                <li>Zimbabwe Traffic Safety Council - Road safety information and defensive driving courses</li>
+                <li>Zimbabwe Highway Code - Official rules and regulations for driving in Zimbabwe</li>
+                <li>Vehicle Inspection Department (VID) - Official testing center information</li>
+                <li>Central Vehicle Registry (CVR) - Vehicle registration and licensing information</li>
+              </ul>
+              
+              <div className="mt-4 p-3 bg-green-900/50 rounded border border-green-800">
+                <p className="text-sm text-green-100">
+                  <strong>Study Tip:</strong> The Zimbabwe Highway Code is the most comprehensive resource for learning driving laws and regulations in Zimbabwe. It covers all aspects of road safety, traffic signs, and driving procedures.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {!subscribed && attempts >= 3 && (
+            <div className="mb-6 p-4 bg-red-900 border border-red-700 rounded-lg text-center">
+              <h3 className="text-lg font-bold text-red-100 mb-2">Free Attempts Exhausted</h3>
+              <p className="text-red-200 mb-4">You've used all 3 free attempts. Subscribe now for unlimited quiz access!</p>
+              <Link href="/payment">
+                <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                  Subscribe Now
+                </button>
+              </Link>
+            </div>
+          )}
+          <div className="space-y-3 sm:space-y-4">
+            <button
+              onClick={() => startQuiz()}
+              className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg text-sm sm:text-base transition-colors duration-200 shadow-md hover:shadow-lg touch-manipulation w-full mx-auto border border-blue-500"
+            >
+              Take Another Quiz
+            </button>
+            <div>
+              <button
+                onClick={() => setStage('start')}
+                className="text-blue-400 hover:text-blue-300 active:text-blue-200 font-medium transition-colors duration-200 touch-manipulation text-sm mt-2"
+              >
+                Back to Home
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }, [score, questions.length, quizConfig.focusOnZimbabweLaws, getScoreColor, getScoreMessage, startQuiz, stage]);
+
+  // Memoized floating info icon
+  const floatingInfoIcon = useMemo(() => {
+    if (stage !== 'start') return null;
+    
+    return (
+      <div className="fixed top-3 left-3 z-50 group">
+        <button 
+          onClick={() => setShowSiteInfo(prev => !prev)}
+          className="bg-blue-900/90 rounded-full p-2 border border-blue-700 shadow-lg hover:bg-blue-800/90 transition-colors flex items-center justify-center"
+          title="Site Information"
+        >
+          <span className="text-sm sm:text-xl">ℹ️</span>
+        </button>
+        <div className="absolute left-0 top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded py-1 px-2 pointer-events-none whitespace-nowrap">
+          Site Information
+        </div>
+      </div>
+    );
+  }, [stage]);
+
+  // Memoized floating trophy icon
+  const floatingTrophyIcon = useMemo(() => {
+    if (stage !== 'result') return null;
+    
+    return (
+      <div className="fixed top-3 right-3 z-50">
+        <button 
+          onClick={() => setShowLeaderboard(prev => !prev)}
+          className="bg-blue-900/90 rounded-full p-2 border border-blue-700 shadow-lg hover:bg-blue-800/90 transition-colors"
+          title="View leaderboard"
+        >
+          <span className="text-sm sm:text-xl">🏆</span>
+        </button>
+      </div>
+    );
+  }, [stage, setShowLeaderboard]);
+
+  // Memoized leaderboard
+  const leaderboardModal = useMemo(() => {
+    if (!showLeaderboard || stage !== 'result') return null;
+    
+    return (
+      <div className="fixed top-12 left-2 right-2 sm:left-0 sm:right-0 z-50 mx-auto max-w-md bg-blue-900/90 rounded-lg border border-blue-700 shadow-lg p-3 sm:p-4 animate-fade-in">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-sm sm:text-base font-semibold text-white flex items-center">
+            <span className="mr-1 sm:mr-2">🏆</span> Leaderboard
+          </h3>
+          <button 
+            onClick={() => setShowLeaderboard(false)}
+            className="text-gray-300 hover:text-white text-sm sm:text-base p-1"
+          >
+            ✕
+          </button>
+        </div>
+        <LeaderboardTable score={score} questions={questions} limit={5} />
+      </div>
+    );
+  }, [showLeaderboard, stage, score, questions]);
+
+  // Memoized site information modal
+  const siteInfoModal = useMemo(() => {
+    if (!showSiteInfo || stage !== 'start') return null;
+    
+    // Function to detect platform
+    const getPlatformInfo = () => {
+      const userAgent = navigator.userAgent.toLowerCase();
+      let platform = 'Unknown';
+      let icon = '💻';
+      
+      if (userAgent.includes('android')) {
+        platform = 'Android';
+        icon = '📱';
+      } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+        platform = 'iOS';
+        icon = '📱';
+      } else if (userAgent.includes('windows')) {
+        platform = 'Windows';
+        icon = '💻';
+      } else if (userAgent.includes('mac')) {
+        platform = 'macOS';
+        icon = '💻';
+      } else if (userAgent.includes('linux')) {
+        platform = 'Linux';
+        icon = '💻';
+      }
+      
+      return { platform, icon };
+    };
+    
+    const { platform, icon } = getPlatformInfo();
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+    
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+        <div className="bg-gray-900 rounded-xl border border-gray-700 shadow-2xl p-4 sm:p-6 max-w-md mx-4 w-full">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg sm:text-xl font-semibold text-white flex items-center">
+              <span className="mr-2">ℹ️</span> Site Information
+            </h3>
+            <button 
+              onClick={() => setShowSiteInfo(false)}
+              className="text-gray-400 hover:text-white text-xl p-1 rounded-full hover:bg-gray-800 transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            {/* Site URL */}
+            <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+              <h4 className="text-sm font-medium text-blue-400 mb-2 flex items-center">
+                <span className="mr-2">🌐</span> Current URL
+              </h4>
+              <div className="bg-gray-900 rounded p-2 border border-gray-600">
+                <code className="text-xs sm:text-sm text-green-400 break-all">{currentUrl}</code>
+              </div>
+              <button
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: 'VidApp - Zimbabwe Driving License Quiz',
+                      text: 'Check out this driving license quiz app!',
+                      url: currentUrl,
+                    })
+                    .catch(err => console.error('Error sharing:', err));
+                  } else {
+                    // Fallback for browsers that don't support Web Share API
+                    navigator.clipboard?.writeText(currentUrl);
+                    alert('URL copied to clipboard!');
+                  }
+                }}
+                className="mt-2 text-xs text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                🔗 Share
+              </button>
+            </div>
+            
+            {/* Platform Information */}
+            <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+              <h4 className="text-sm font-medium text-purple-400 mb-2 flex items-center">
+                <span className="mr-2">{icon}</span> Your Platform
+              </h4>
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl">{icon}</span>
+                <span className="text-white font-medium">{platform}</span>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">
+                Detected from your device&apos;s user agent
+              </p>
+            </div>
+            
+            {/* App Information */}
+            <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+              <h4 className="text-sm font-medium text-yellow-400 mb-2 flex items-center">
+                <span className="mr-2">🚗</span> About VidApp
+              </h4>
+              <p className="text-sm text-gray-300 mb-2">
+                Zimbabwe Driving License Quiz App
+              </p>
+              <div className="text-xs text-gray-400 space-y-1">
+                <div>• Progressive Web App (PWA)</div>
+                <div>• Works offline after first visit</div>
+                <div>• Installable on your device</div>
+              </div>
+            </div>
+            
+            {/* Quick Actions */}
+            <div className="flex space-x-2">
+              <Link
+                href="/blog"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-3 rounded-lg transition-colors text-center"
+              >
+                📚 Visit Blog
+              </Link>
+              <a
+                href="/content-policy"
+                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-sm py-2 px-3 rounded-lg transition-colors text-center"
+              >
+                📋 Content Policy
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }, [showSiteInfo, stage]);
+
+    useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push('/sign-in');
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  // Show loading while Clerk is initializing
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-xl">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Prevent rendering main content if not signed in (though middleware should handle this)
+  if (!isSignedIn) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gray-950 text-white relative">
       {showSplash && <SplashScreen />}
@@ -374,191 +865,16 @@ export default function DrivingQuizApp() {
       <Header />
       
       {/* Floating Info Icon - Only visible before quiz starts */}
-      {useMemo(() => {
-        if (stage !== 'start') return null;
-        
-        return (
-          <div className="fixed top-3 left-3 z-50 group">
-            <button 
-              onClick={() => setShowSiteInfo(prev => !prev)}
-              className="bg-blue-900/90 rounded-full p-2 border border-blue-700 shadow-lg hover:bg-blue-800/90 transition-colors flex items-center justify-center"
-              title="Site Information"
-            >
-              <span className="text-sm sm:text-xl">ℹ️</span>
-            </button>
-            <div className="absolute left-0 top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded py-1 px-2 pointer-events-none whitespace-nowrap">
-              Site Information
-            </div>
-          </div>
-        );
-      }, [stage])}
+      {floatingInfoIcon}
       
       {/* Floating Trophy Icon - Memoized to prevent unnecessary re-renders */}
-      {useMemo(() => {
-        if (stage !== 'result') return null;
-        
-        return (
-          <div className="fixed top-3 right-3 z-50">
-            <button 
-              onClick={() => setShowLeaderboard(prev => !prev)}
-              className="bg-blue-900/90 rounded-full p-2 border border-blue-700 shadow-lg hover:bg-blue-800/90 transition-colors"
-              title="View leaderboard"
-            >
-              <span className="text-sm sm:text-xl">🏆</span>
-            </button>
-          </div>
-        );
-      }, [stage, setShowLeaderboard])}
+      {floatingTrophyIcon}
       
       {/* Floating Leaderboard - Memoized to prevent unnecessary re-renders */}
-      {useMemo(() => {
-        if (!showLeaderboard || stage !== 'result') return null;
-        
-        return (
-          <div className="fixed top-12 left-2 right-2 sm:left-0 sm:right-0 z-50 mx-auto max-w-md bg-blue-900/90 rounded-lg border border-blue-700 shadow-lg p-3 sm:p-4 animate-fade-in">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-sm sm:text-base font-semibold text-white flex items-center">
-                <span className="mr-1 sm:mr-2">🏆</span> Leaderboard
-              </h3>
-              <button 
-                onClick={() => setShowLeaderboard(false)}
-                className="text-gray-300 hover:text-white text-sm sm:text-base p-1"
-              >
-                ✕
-              </button>
-            </div>
-            <LeaderboardTable score={score} questions={questions} limit={5} />
-          </div>
-        );
-      }, [showLeaderboard, stage, score, questions])}
+      {leaderboardModal}
       
       {/* Site Information Modal - Memoized to prevent unnecessary re-renders */}
-      {useMemo(() => {
-        if (!showSiteInfo || stage !== 'start') return null;
-        
-        // Function to detect platform
-        const getPlatformInfo = () => {
-          const userAgent = navigator.userAgent.toLowerCase();
-          let platform = 'Unknown';
-          let icon = '💻';
-          
-          if (userAgent.includes('android')) {
-            platform = 'Android';
-            icon = '📱';
-          } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
-            platform = 'iOS';
-            icon = '📱';
-          } else if (userAgent.includes('windows')) {
-            platform = 'Windows';
-            icon = '💻';
-          } else if (userAgent.includes('mac')) {
-            platform = 'macOS';
-            icon = '💻';
-          } else if (userAgent.includes('linux')) {
-            platform = 'Linux';
-            icon = '💻';
-          }
-          
-          return { platform, icon };
-        };
-        
-        const { platform, icon } = getPlatformInfo();
-        const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
-        
-        return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
-            <div className="bg-gray-900 rounded-xl border border-gray-700 shadow-2xl p-4 sm:p-6 max-w-md mx-4 w-full">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg sm:text-xl font-semibold text-white flex items-center">
-                  <span className="mr-2">ℹ️</span> Site Information
-                </h3>
-                <button 
-                  onClick={() => setShowSiteInfo(false)}
-                  className="text-gray-400 hover:text-white text-xl p-1 rounded-full hover:bg-gray-800 transition-colors"
-                >
-                  ✕
-                </button>
-              </div>
-              
-              <div className="space-y-4">
-                {/* Site URL */}
-                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
-                  <h4 className="text-sm font-medium text-blue-400 mb-2 flex items-center">
-                    <span className="mr-2">🌐</span> Current URL
-                  </h4>
-                  <div className="bg-gray-900 rounded p-2 border border-gray-600">
-                    <code className="text-xs sm:text-sm text-green-400 break-all">{currentUrl}</code>
-                  </div>
-                  <button
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({
-                          title: 'VidApp - Zimbabwe Driving License Quiz',
-                          text: 'Check out this driving license quiz app!',
-                          url: currentUrl,
-                        })
-                        .catch(err => console.error('Error sharing:', err));
-                      } else {
-                        // Fallback for browsers that don't support Web Share API
-                        navigator.clipboard?.writeText(currentUrl);
-                        alert('URL copied to clipboard!');
-                      }
-                    }}
-                    className="mt-2 text-xs text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    🔗 Share
-                  </button>
-                </div>
-                
-                {/* Platform Information */}
-                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
-                  <h4 className="text-sm font-medium text-purple-400 mb-2 flex items-center">
-                    <span className="mr-2">{icon}</span> Your Platform
-                  </h4>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl">{icon}</span>
-                    <span className="text-white font-medium">{platform}</span>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Detected from your device&apos;s user agent
-                  </p>
-                </div>
-                
-                {/* App Information */}
-                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
-                  <h4 className="text-sm font-medium text-yellow-400 mb-2 flex items-center">
-                    <span className="mr-2">🚗</span> About VidApp
-                  </h4>
-                  <p className="text-sm text-gray-300 mb-2">
-                    Zimbabwe Driving License Quiz App
-                  </p>
-                  <div className="text-xs text-gray-400 space-y-1">
-                    <div>• Progressive Web App (PWA)</div>
-                    <div>• Works offline after first visit</div>
-                    <div>• Installable on your device</div>
-                  </div>
-                </div>
-                
-                {/* Quick Actions */}
-                <div className="flex space-x-2">
-                  <Link
-                    href="/blog"
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-3 rounded-lg transition-colors text-center"
-                  >
-                    📚 Visit Blog
-                  </Link>
-                  <a
-                    href="/content-policy"
-                    className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-sm py-2 px-3 rounded-lg transition-colors text-center"
-                  >
-                    📋 Content Policy
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      }, [showSiteInfo, stage])}
+      {siteInfoModal}
       <div className="container mx-auto py-4 sm:py-8 px-3 sm:px-4 max-w-4xl">
         
 
@@ -795,6 +1111,11 @@ export default function DrivingQuizApp() {
             </div>
             
             <div className="text-center">
+              {!subscribed && (quizConfig.mode === 'random' || quizConfig.mode === 'study') && (
+                <div className="mb-4 p-3 bg-yellow-900 text-yellow-100 rounded-lg text-sm">
+                  Remaining free attempts: {3 - attempts}. Subscribe for unlimited access.
+                </div>
+              )}
               <button
                 onClick={() => startQuiz()}
                 className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2 sm:py-3 px-5 sm:px-8 rounded-lg text-sm sm:text-lg transition-colors duration-200 shadow-md hover:shadow-lg touch-manipulation border border-blue-500 w-full sm:w-auto"
@@ -810,10 +1131,8 @@ export default function DrivingQuizApp() {
         )}
 
         {/* Quiz Screen */}
-        {useMemo(() => {
-          if (stage === 'quiz' && currentQuestion) {
-            return (
-          <div className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-800">
+        {quizContent && (
+          <div>
             {/* Progress Bar */}
             <div className="mb-4 sm:mb-6">
               <div className="flex justify-between items-center mb-2">
@@ -978,16 +1297,11 @@ export default function DrivingQuizApp() {
               </div>
             )}
           </div>
-            );
-          }
-          return null;
-        }, [currentQuestion, currentQuestionIndex, questions.length, score, showExplanation, timeLeft, totalTimeLeft, selectedAnswer, isAnswerCorrect, quizConfig, handleAnswerSelect, nextQuestion, previousQuestion, stage])}
+        )}
 
         {/* Results Screen */}
-        {useMemo(() => {
-          if (stage === 'result') {
-            return (
-          <div className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 text-center border border-gray-800">
+        {resultsContent && (
+          <div>
             <div className="mb-4 sm:mb-6">
               <div className="text-3xl sm:text-5xl md:text-6xl mb-3 sm:mb-4">
                 {score >= questions.length * 0.8 ? '🎉' : score >= questions.length * 0.7 ? '👍' : '📚'}
@@ -1063,10 +1377,7 @@ export default function DrivingQuizApp() {
               </div>
             </div>
           </div>
-            );
-          }
-          return null;
-        }, [score, questions.length, quizConfig.focusOnZimbabweLaws, getScoreColor, getScoreMessage, startQuiz, stage])}
+        )}
 
         {/* Footer */}
         <div className="text-center mt-6 sm:mt-8 text-gray-400 text-xs sm:text-sm px-4">

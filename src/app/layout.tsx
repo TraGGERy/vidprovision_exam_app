@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import PWAInstallContainer from "./pwa-install";
 import AdSenseScript from "../components/AdSenseScript";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -158,8 +159,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-        <PWAInstallContainer />
+        <ClerkProvider>
+          {children}
+          <PWAInstallContainer />
+        </ClerkProvider>
       </body>
     </html>
   );

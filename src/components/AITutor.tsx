@@ -104,7 +104,7 @@ export default function AITutor({
       setLevel(newLevel);
       // Could add level up animation or notification here
     }
-  }, [isCorrect, streak, xp, level]);
+  }, [isCorrect, streak, xp]);
 
   // Fallback function for when API is unavailable
   const fallbackToMockResponse = useCallback((isCorrect: boolean) => {
@@ -125,7 +125,7 @@ export default function AITutor({
       setAdvice(mockAdvice);
       onAdvice(mockAdvice);
     }
-  }, [focusOnZimbabweLaws, advice, onAdvice]);
+  }, [focusOnZimbabweLaws, onAdvice]);
 
   // Function to generate advice using OpenAI
   const generateAdvice = useCallback(async () => {
@@ -170,7 +170,7 @@ export default function AITutor({
     } finally {
       setIsLoading(false);
     }
-  }, [currentQuestion, userAnswer, isCorrect, character, showDetailedExplanations, focusOnZimbabweLaws, advice, onAdvice, fallbackToMockResponse]);
+  }, [currentQuestion, userAnswer, isCorrect, character, showDetailedExplanations, focusOnZimbabweLaws, onAdvice, fallbackToMockResponse]);
 
   // Generate advice when question or answer changes
   useEffect(() => {

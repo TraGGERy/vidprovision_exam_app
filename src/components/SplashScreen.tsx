@@ -1,10 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 export default function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
+  const { isSignedIn, isLoaded } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     // Start fade out animation after 1.5 seconds
@@ -12,8 +16,17 @@ export default function SplashScreen() {
       setFadeOut(true);
     }, 1500);
 
-    // Hide splash screen after animation completes (2.5 seconds total)
+    // Handle authentication and navigation after animation completes (2.5 seconds total)
     const hideTimer = setTimeout(() => {
+      if (isLoaded) {
+        if (isSignedIn) {
+          // User is authenticated, redirect to main page
+          router.push('/');
+        } else {
+          // User is not authenticated, redirect to sign-in page
+          router.push('/sign-in');
+        }
+      }
       setIsVisible(false);
     }, 2500);
 
@@ -21,7 +34,7 @@ export default function SplashScreen() {
       clearTimeout(fadeTimer);
       clearTimeout(hideTimer);
     };
-  }, []);
+  }, [isLoaded, isSignedIn, router]);
 
   if (!isVisible) return null;
 

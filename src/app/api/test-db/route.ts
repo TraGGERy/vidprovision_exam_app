@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { createOrGetUser, canUserStartTest, startTestSession, endTestSession } from '@/lib/db/queries';
 
 // Test endpoint to verify database integration with Clerk
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Get the authenticated user from Clerk
     const { userId } = await auth();

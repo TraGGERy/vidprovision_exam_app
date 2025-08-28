@@ -223,7 +223,7 @@ export default function DrivingQuizApp() {
     
     // setQuizStartTime(new Date()); // Removed assignment to unused variable
     setStage('quiz');
-  }, [availableQuestions, quizConfig]);
+  }, [availableQuestions, quizConfig, router, user]);
 
   const handleAnswerSelect = useMemo(() => (option: string) => {
     // Prevent multiple selections or clicks during explanation
@@ -617,7 +617,7 @@ export default function DrivingQuizApp() {
           {!subscribed && attempts >= 3 && (
             <div className="mb-6 p-4 bg-red-900 border border-red-700 rounded-lg text-center">
               <h3 className="text-lg font-bold text-red-100 mb-2">Free Attempts Exhausted</h3>
-              <p className="text-red-200 mb-4">You've used all 3 free attempts. Subscribe now for unlimited quiz access!</p>
+              <p className="text-red-200 mb-4">You&apos;ve used all 3 free attempts. Subscribe now for unlimited quiz access!</p>
               <Link href="/payment">
                 <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                   Subscribe Now
@@ -645,7 +645,7 @@ export default function DrivingQuizApp() {
       );
     }
     return null;
-  }, [score, questions.length, quizConfig.focusOnZimbabweLaws, getScoreColor, getScoreMessage, startQuiz, stage]);
+  }, [score, questions.length, quizConfig.focusOnZimbabweLaws, getScoreColor, getScoreMessage, startQuiz, stage, subscribed, attempts]);
 
   // Memoized floating info icon
   const floatingInfoIcon = useMemo(() => {

@@ -118,7 +118,7 @@ export default function DrivingQuizApp() {
     const subscribed = metadata.subscribed === true;
     let attempts = (metadata.attempts as number) || 0;
     
-    if (!subscribed && (config.mode === 'random' || config.mode === 'study')) {
+        if (!subscribed) {
       if (attempts >= 3) {
     router.push('/payment');
     return;

@@ -130,7 +130,7 @@ export default function DrivingQuizApp() {
       });
     } catch (error) {
       console.error('Error updating user metadata:', error);
-      // Optionally, show a user-friendly message or redirect ggkgkgkgk
+      // Optionally, show a user-friendly message or redirect
       alert('An error occurred while updating your attempt count. Please try again.');
     }
     }

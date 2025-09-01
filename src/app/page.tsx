@@ -52,6 +52,7 @@ export default function DrivingQuizApp() {
   const metadata = user?.unsafeMetadata || {};
   const subscribed = metadata.subscribed === true;
   const attempts = (metadata.attempts as number) || 0;
+  const dailyAttempts = (metadata.dailyAttempts as number) || 0;
 
   // Register service worker for PWA functionality
   useEffect(() => {
@@ -114,25 +115,36 @@ export default function DrivingQuizApp() {
   const startQuiz = useMemo(() => async (config: QuizConfig = quizConfig) => {
     if (!user) return;
     
-    const metadata = user.publicMetadata || {};
+    const metadata = user.unsafeMetadata || {};
     const subscribed = metadata.subscribed === true;
-    let attempts = (metadata.attempts as number) || 0;
     
-        if (!subscribed) {
-      if (attempts >= 3) {
-    router.push('/payment');
-    return;
-  }
-      attempts++;
+    if (!subscribed) {
+      const today = new Date().toDateString();
+      const lastAttemptDate = metadata.lastAttemptDate as string;
+      const dailyAttempts = (metadata.dailyAttempts as number) || 0;
+      
+      // Check if user has already taken a test today
+      if (lastAttemptDate === today && dailyAttempts >= 1) {
+        alert('You have already taken your daily test. Please try again tomorrow or subscribe for unlimited access.');
+        return;
+      }
+      
+      // Reset daily attempts if it's a new day
+      const newDailyAttempts = lastAttemptDate === today ? dailyAttempts + 1 : 1;
+      
       try {
-      await user.update({
-        unsafeMetadata: { ...metadata, attempts }
-      });
-    } catch (error) {
-      console.error('Error updating user metadata:', error);
-      // Optionally, show a user-friendly message or redirect
-      alert('An error occurred while updating your attempt count. Please try again.');
-    }
+        await user.update({
+          unsafeMetadata: { 
+            ...metadata, 
+            lastAttemptDate: today,
+            dailyAttempts: newDailyAttempts
+          }
+        });
+      } catch (error) {
+        console.error('Error updating user metadata:', error);
+        alert('An error occurred while updating your attempt count. Please try again.');
+        return;
+      }
     }
     // Get questions based on configuration
     let selectedQuestions: Question[] = [];
@@ -1111,9 +1123,9 @@ export default function DrivingQuizApp() {
             </div>
             
             <div className="text-center">
-              {!subscribed && (quizConfig.mode === 'random' || quizConfig.mode === 'study') && (
+              {!subscribed && (
                 <div className="mb-4 p-3 bg-yellow-900 text-yellow-100 rounded-lg text-sm">
-                  Remaining free attempts: {3 - attempts}. Subscribe for unlimited access.
+                  Daily free attempts: {dailyAttempts}/1 used today. Subscribe for unlimited access.
                 </div>
               )}
               <button

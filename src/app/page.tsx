@@ -123,9 +123,9 @@ export default function DrivingQuizApp() {
       const lastAttemptDate = metadata.lastAttemptDate as string;
       const dailyAttempts = (metadata.dailyAttempts as number) || 0;
       
-      // Check if user has already taken a test today
-      if (lastAttemptDate === today && dailyAttempts >= 1) {
-        alert('You have already taken your daily test. Please try again tomorrow or subscribe for unlimited access.');
+      // Check if user has already taken 3 tests today
+      if (lastAttemptDate === today && dailyAttempts >= 3) {
+        router.push('/payment');
         return;
       }
       
@@ -1125,7 +1125,7 @@ export default function DrivingQuizApp() {
             <div className="text-center">
               {!subscribed && (
                 <div className="mb-4 p-3 bg-yellow-900 text-yellow-100 rounded-lg text-sm">
-                  Daily free attempts: {dailyAttempts}/1 used today. Subscribe for unlimited access.
+                  Daily free attempts: {dailyAttempts}/3 used today. Subscribe for unlimited access.
                 </div>
               )}
               <button

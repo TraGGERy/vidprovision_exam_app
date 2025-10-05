@@ -32,8 +32,8 @@ export const metadata: Metadata = {
     userScalable: true
   },
   keywords: "Zimbabwe driving license, driving test preparation, driving quiz app, road rules Zimbabwe, traffic signs, PWA, driving exam, learner's license",
-  authors: [{ name: "Mees Ai" }],
-  creator: "Mees Ai ",
+  authors: [{ name: "Tasha" }],
+  creator: "tasha ",
   publisher: "VidApp",
   category: "Education",
   applicationName: "Permetly",

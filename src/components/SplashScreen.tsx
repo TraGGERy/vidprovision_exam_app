@@ -52,7 +52,7 @@ export default function SplashScreen() {
           <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse delay-300"></div>        
         </div>
       </div>
-      <p className="text-xs text-gray-400 absolute bottom-6">powered by Mees Ai</p>
+      <p className="text-xs text-gray-400 absolute bottom-6">powered by tasha </p>
     </div>
   );
 }

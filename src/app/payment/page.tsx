@@ -45,21 +45,23 @@ function PaymentForm() {
       <CardElement className="border p-3 rounded-md" />
       {error && <p className="text-red-500">{error}</p>}
       <Button type="submit" disabled={!stripe || processing} className="w-full">
-        {processing ? 'Processing...' : 'Pay $1.50'}
+        {processing ? 'Processing...' : 'Pay $2 USD'}
       </Button>
     </form>
   );
 }
 
 export default function PaymentPage() {
-  
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
 
   return (
     <div className="container mx-auto p-4 max-w-2xl">
       <Card>
         <CardHeader>
           <CardTitle>Subscribe to Full Access</CardTitle>
-          <CardDescription>Monthly subscription: $1.50</CardDescription>
+          <CardDescription>Monthly subscription: $2 USD</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="mb-4">Choose your payment method to unlock unlimited test attempts and full features.</p>
@@ -70,13 +72,32 @@ export default function PaymentPage() {
             </TabsList>
             <TabsContent value="ecocash">
               <div className="space-y-4">
-                <p>Pay to EcoCash number: 0873708963</p>
-                <p>Amount: $1.50 (monthly)</p>
+                <div className="flex items-center gap-2">
+                  <p>Pay to EcoCash number:</p>
+                  <button
+                    onClick={() => copyToClipboard('078091294')}
+                    className="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded font-mono text-blue-800 cursor-pointer transition-colors"
+                    title="Click to copy"
+                  >
+                    078091294
+                  </button>
+                </div>
+                <p>Amount: <strong>$2 USD</strong></p>
                 <p>Instructions:</p>
                 <ol className="list-decimal pl-5 space-y-2">
-                  <li>Make payment via EcoCash to 0873708963</li>
+                  <li>Make payment via EcoCash to <span className="font-mono font-semibold">078091294</span></li>
                   <li>Take a screenshot or get transaction confirmation</li>
-                  <li>Send the proof via WhatsApp to 0873708963, including your account email</li>
+                  <li>
+                    Send the payment confirmation via WhatsApp to{' '}
+                    <button
+                      onClick={() => copyToClipboard('078091294')}
+                      className="bg-green-100 hover:bg-green-200 px-2 py-1 rounded font-mono text-green-800 cursor-pointer transition-colors"
+                      title="Click to copy WhatsApp number"
+                    >
+                      078091294
+                    </button>
+                    , including your account email
+                  </li>
                   <li>Our admin will review and activate your subscription within 24 hours</li>
                 </ol>
               </div>

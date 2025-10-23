@@ -52,6 +52,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [backfillStatus, setBackfillStatus] = useState<string>('');
   const router = useRouter();
 
   useEffect(() => {
@@ -67,14 +68,25 @@ export default function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
+      console.log('Fetching users...');
+      const token = localStorage.getItem('adminToken');
+      console.log('Admin token:', token ? 'Present' : 'Missing');
+      
       const response = await fetch('/api/admin/users', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
+      
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
+      
       if (response.ok) {
+        console.log('Setting users:', data.users);
         setUsers(data.users);
+      } else {
+        console.error('API error:', data);
       }
     } catch (error) {
       console.error('Failed to fetch users:', error);
@@ -131,6 +143,28 @@ export default function AdminDashboard() {
     }
   };
 
+  const backfillUsers = async () => {
+    try {
+      setBackfillStatus('Running backfill...');
+      const response = await fetch('/api/admin/backfill', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setBackfillStatus(`Backfill complete: created ${data.created}, existing ${data.existing}`);
+        await fetchUsers();
+      } else {
+        setBackfillStatus(`Backfill failed: ${data.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Failed to backfill users:', error);
+      setBackfillStatus('Backfill failed. Check console.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -147,10 +181,16 @@ export default function AdminDashboard() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
             <p className="text-gray-600">Manage users and subscriptions</p>
+            {backfillStatus && (
+              <p className="text-sm text-gray-500 mt-2">{backfillStatus}</p>
+            )}
           </div>
-          <Button onClick={handleLogout} variant="outline">
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={backfillUsers} variant="secondary">Backfill Users</Button>
+            <Button onClick={handleLogout} variant="outline">
+              Logout
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}

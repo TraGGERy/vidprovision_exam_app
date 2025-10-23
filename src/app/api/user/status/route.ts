@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { userService } from '@/lib/userService';
+import { auth, clerkClient } from '@clerk/nextjs/server';
+import { createOrGetUser, canUserStartTest, incrementUserAttempts, getUserUsageSummary } from '@/lib/db/queries';
 
 // Production-ready logging
 const logger = {
@@ -15,14 +15,7 @@ const logger = {
   }
 };
 
-// Helper function to check if subscription is expired
-const isSubscriptionExpired = (endDate: Date | string | null): boolean => {
-  if (!endDate) return false;
-  const d = typeof endDate === 'string' ? new Date(endDate) : endDate;
-  return d < new Date();
-};
-
-// GET: Check user subscription status and usage limits
+// GET: Check user subscription status and usage limits (auto-provision user in DB)
 export async function GET() {
   try {
     const { userId } = await auth();
@@ -37,64 +30,40 @@ export async function GET() {
 
     logger.info(`Checking status for user: ${userId}`);
 
-    // Find user in JSON file
-    const user = userService.getUserById(userId);
+    // Get Clerk user profile to seed DB record
+    const clerkUser = await clerkClient.users.getUser(userId);
+    const email = clerkUser.emailAddresses?.[0]?.emailAddress ?? `${userId}@example.com`;
+    const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') || clerkUser.username || 'User';
 
-    if (!user) {
-      logger.warn(`User not found in JSON file: ${userId}`);
-      return NextResponse.json(
-        { error: 'User not found - Please contact support' },
-        { status: 404 }
-      );
-    }
+    // Ensure the user exists in our database (create-or-get)
+    const dbUser = await createOrGetUser(userId, email, name);
 
-    // Check if subscription is expired and auto-deactivate
-    const updatedUser = { ...user };
-    if (user.subscription.isActive && isSubscriptionExpired(user.subscription.endDate)) {
-      logger.info(`Auto-deactivating expired subscription for user: ${userId}`);
-      // Note: You would need to implement updateUserSubscription in userService
-      // For now, we'll just mark it in the response
-      updatedUser.subscription.isActive = false;
-    }
-
-    // Check if user can start a test
-    const canStartResult = userService.canUserStartTest(userId);
-    const canStart = canStartResult.canStart;
-
-    // Determine subscription type
-    const subscriptionType = updatedUser.subscription.isActive ? updatedUser.subscription.plan : 'free';
-
-    // Calculate remaining attempts for free users
-    const today = new Date().toISOString().split('T')[0];
-    const isToday = updatedUser.usage.lastAttemptDate === today;
-    const dailyAttempts = isToday ? updatedUser.usage.dailyAttempts : 0;
-    const remainingAttempts = subscriptionType === 'free' ? Math.max(0, 3 - dailyAttempts) : -1; // -1 means unlimited
+    // Check limits and usage from DB
+    const limits = await canUserStartTest(dbUser.id);
+    const usageSummary = await getUserUsageSummary(dbUser.id);
 
     const response = {
       user: {
-        id: updatedUser.id,
-        email: updatedUser.email,
-        firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName,
-        subscription: updatedUser.subscription,
-        usage: updatedUser.usage,
-        status: updatedUser.status
+        id: dbUser.id,
+        email: dbUser.email,
+        name: dbUser.name,
+        subscriptionType: dbUser.subscriptionType,
       },
       limits: {
-        canStartTest: canStart,
-        subscriptionType,
-        dailyLimit: subscriptionType === 'free' ? 3 : -1, // -1 means unlimited
-        dailyAttempts,
-        remainingAttempts,
-        lastAttemptDate: updatedUser.usage.lastAttemptDate,
-        totalAttempts: updatedUser.usage.totalAttempts
+        canStartTest: limits.canStart,
+        subscriptionType: limits.subscriptionType,
+        dailyLimit: limits.subscriptionType === 'free' ? (typeof limits.remainingTests === 'number' && limits.remainingTests >= 0 ? limits.remainingTests + usageSummary.testsToday : -1) : -1,
+        dailyAttempts: usageSummary.testsToday,
+        remainingAttempts: limits.remainingTests,
+        lastAttemptDate: usageSummary.lastAttemptDate,
+        totalAttempts: usageSummary.totalAttempts,
       }
     };
 
-    logger.info(`Status check successful for user: ${userId}`, { 
-      canStartTest: canStart, 
-      subscriptionType, 
-      remainingAttempts 
+    logger.info(`Status check successful for user: ${userId}`, {
+      canStartTest: limits.canStart,
+      subscriptionType: limits.subscriptionType,
+      remainingAttempts: limits.remainingTests
     });
 
     return NextResponse.json(response);
@@ -111,7 +80,7 @@ export async function GET() {
   }
 }
 
-// POST: Handle test actions (start_test, etc.)
+// POST: Handle test actions (start_test)
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
@@ -137,30 +106,44 @@ export async function POST(request: NextRequest) {
 
     logger.info(`Processing action: ${action} for user: ${userId}`);
 
+    // Get Clerk user and ensure DB user exists
+    const clerkUser = await clerkClient.users.getUser(userId);
+    const email = clerkUser.emailAddresses?.[0]?.emailAddress ?? `${userId}@example.com`;
+    const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') || clerkUser.username || 'User';
+    const dbUser = await createOrGetUser(userId, email, name);
+
     if (action === 'start_test') {
       // Check if user can start a test
-      const canStartResult = userService.canUserStartTest(userId);
-      const canStart = canStartResult.canStart;
+      const limits = await canUserStartTest(dbUser.id);
 
-      if (!canStart) {
+      if (!limits.canStart) {
         logger.warn(`User ${userId} attempted to start test but limit reached`);
         return NextResponse.json(
-          { error: 'Daily test limit reached. Please upgrade your subscription or try again tomorrow.' },
+          { error: 'Test limit reached. Please upgrade your subscription or try again later.' },
           { status: 403 }
         );
       }
 
       // Increment user attempts
       try {
-        const success = userService.incrementUserAttempts(userId);
+        const success = await incrementUserAttempts(dbUser.id);
         if (!success) {
           throw new Error('Failed to increment attempts');
         }
         logger.info(`Successfully incremented attempts for user: ${userId}`);
 
+        const usageSummary = await getUserUsageSummary(dbUser.id);
+        const updatedLimits = await canUserStartTest(dbUser.id);
+
         return NextResponse.json({
           success: true,
-          message: 'Test started successfully'
+          message: 'Test started successfully',
+          limits: {
+            canStartTest: updatedLimits.canStart,
+            subscriptionType: updatedLimits.subscriptionType,
+            dailyAttempts: usageSummary.testsToday,
+            remainingAttempts: updatedLimits.remainingTests,
+          }
         });
 
       } catch (error) {

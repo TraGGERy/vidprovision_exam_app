@@ -15,6 +15,7 @@ export const users = pgTable('users', {
   paymentMethod: text('payment_method'),
   amount: numeric('amount', { precision: 10, scale: 2 }),
   currency: text('currency').default('USD'),
+  monthlyTrialLimit: integer('monthly_trial_limit').notNull().default(3),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => {

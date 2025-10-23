@@ -1,34 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
-interface UserData {
-  users: Array<{
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    createdAt: string;
-    subscription: {
-      isActive: boolean;
-      plan: string;
-      startDate: string | null;
-      endDate: string | null;
-      paymentMethod: string | null;
-      amount: number;
-      currency: string;
-    };
-    usage: {
-      dailyAttempts: number;
-      lastAttemptDate: string;
-      totalAttempts: number;
-    };
-    status: string;
-  }>;
-}
+import { getAllUsers, getUserUsageSummary } from '@/lib/db/queries';
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     const token = authHeader.substring(7);
     try {
-      jwt.verify(token, JWT_SECRET);
+      jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
     } catch {
       return NextResponse.json(
         { error: 'Invalid token' },
@@ -51,14 +23,42 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Read users from JSON database
-    const dataPath = join(process.cwd(), 'data', 'users.json');
-    const fileContent = readFileSync(dataPath, 'utf8');
-    const data: UserData = JSON.parse(fileContent);
+    // Fetch users from PostgreSQL and map to admin UI shape
+    const dbUsers = await getAllUsers();
+    const users = await Promise.all(
+      dbUsers.map(async (u) => {
+        const nameParts = (u.name || '').split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        const usage = await getUserUsageSummary(u.id);
+        return {
+          id: String(u.id),
+          email: u.email,
+          firstName,
+          lastName,
+          createdAt: u.createdAt ? new Date(u.createdAt).toISOString() : new Date().toISOString(),
+          subscription: {
+            isActive: !!u.subscriptionActive,
+            plan: u.subscriptionType || 'free',
+            startDate: u.subscriptionStartDate ? new Date(u.subscriptionStartDate).toISOString() : null,
+            endDate: u.subscriptionEndDate ? new Date(u.subscriptionEndDate).toISOString() : null,
+            paymentMethod: u.paymentMethod ?? null,
+            amount: u.amount ? Number(u.amount as unknown as string) : 0,
+            currency: u.currency ?? 'USD',
+          },
+          usage: {
+            dailyAttempts: usage.testsToday,
+            lastAttemptDate: usage.lastAttemptDate ?? '',
+            totalAttempts: usage.totalAttempts,
+          },
+          status: u.subscriptionActive ? 'active' : 'inactive',
+        };
+      })
+    );
 
     return NextResponse.json({
       success: true,
-      users: data.users
+      users,
     });
 
   } catch (error) {

@@ -287,6 +287,78 @@ export async function activateSubscriptionByAdmin(userId: number, paymentMethod:
   return updated;
 }
 
+export async function getAllUsers(): Promise<User[]> {
+  return await db.select().from(users).orderBy(desc(users.createdAt));
+}
+
+export async function getUserByEmail(email: string): Promise<User | null> {
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function grantLifetimeSubscription(userId: number, paymentMethod: string = 'admin'): Promise<User> {
+  const now = new Date();
+  const [updated] = await db
+    .update(users)
+    .set({
+      subscriptionType: 'lifetime',
+      subscriptionActive: true,
+      subscriptionStartDate: now,
+      subscriptionEndDate: null,
+      paymentMethod,
+      amount: '0.00',
+      currency: 'USD',
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+    .returning();
+  return updated;
+}
+
+export async function deactivateSubscriptionByAdmin(userId: number): Promise<User> {
+  const [updated] = await db
+    .update(users)
+    .set({
+      subscriptionType: 'free',
+      subscriptionActive: false,
+      subscriptionEndDate: new Date(),
+      paymentMethod: null,
+      amount: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+    .returning();
+  return updated;
+}
+
+export async function updateUserCore(userId: number, email: string, name?: string): Promise<User> {
+  const [updated] = await db
+    .update(users)
+    .set({
+      email,
+      name,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+    .returning();
+  return updated;
+}
+
+export async function setDailyTestCount(userId: number, count: number): Promise<void> {
+  const today = new Date().toISOString().split('T')[0];
+  const existing = await db
+    .select()
+    .from(userTests)
+    .where(and(eq(userTests.userId, userId), eq(userTests.testDate, today)))
+    .limit(1);
+  if (existing.length > 0) {
+    await db.update(userTests).set({ testCount: count }).where(eq(userTests.id, existing[0].id));
+  } else {
+    const newRecord: NewUserTest = { userId, testDate: today, testCount: count, totalDurationMinutes: 0 };
+    await db.insert(userTests).values(newRecord);
+  }
+}
+
 export async function getUserUsageSummary(userId: number): Promise<{ testsToday: number; remainingTests: number; lastAttemptDate: string | null; totalAttempts: number; }> {
   const today = new Date().toISOString().split('T')[0];
   const todayRow = await db.select().from(userTests).where(and(eq(userTests.userId, userId), eq(userTests.testDate, today))).limit(1);

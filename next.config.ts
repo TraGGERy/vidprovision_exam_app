@@ -15,7 +15,8 @@ const pwaConfig = withPWA({
   dest: "public",
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === "development"
+  // Temporarily disable PWA during build to avoid Windows EPERM kill error
+  disable: true
 });
 
 export default pwaConfig(nextConfig);

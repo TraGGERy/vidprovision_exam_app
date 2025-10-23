@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, integer, boolean, date, index } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, timestamp, integer, boolean, date, index, numeric } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Users table - stores user information and subscription status
@@ -8,6 +8,13 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   name: text('name'),
   subscriptionType: text('subscription_type').notNull().default('free'), // 'free' or 'premium'
+  // Added fields to mirror JSON subscription details
+  subscriptionActive: boolean('subscription_active').notNull().default(false),
+  subscriptionStartDate: timestamp('subscription_start_date'),
+  subscriptionEndDate: timestamp('subscription_end_date'),
+  paymentMethod: text('payment_method'),
+  amount: numeric('amount', { precision: 10, scale: 2 }),
+  currency: text('currency').default('USD'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => {

@@ -52,6 +52,9 @@ function PaymentForm() {
 }
 
 export default function PaymentPage() {
+  const ecocashNumber = '0778091294';
+  const supportEmail = 'tashaverahgumbo@gmail.com';
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
   };
@@ -75,26 +78,26 @@ export default function PaymentPage() {
                 <div className="flex items-center gap-2">
                   <p>Pay to EcoCash number:</p>
                   <button
-                    onClick={() => copyToClipboard('078091294')}
+                    onClick={() => copyToClipboard(ecocashNumber)}
                     className="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded font-mono text-blue-800 cursor-pointer transition-colors"
                     title="Click to copy"
                   >
-                    078091294
+                    {ecocashNumber}
                   </button>
                 </div>
                 <p>Amount: <strong>$2 USD</strong></p>
                 <p>Instructions:</p>
                 <ol className="list-decimal pl-5 space-y-2">
-                  <li>Make payment via EcoCash to <span className="font-mono font-semibold">078091294</span></li>
+                  <li>Make payment via EcoCash to <span className="font-mono font-semibold">{ecocashNumber}</span></li>
                   <li>Take a screenshot or get transaction confirmation</li>
                   <li>
                     Send the payment confirmation via WhatsApp to{' '}
                     <button
-                      onClick={() => copyToClipboard('078091294')}
+                      onClick={() => copyToClipboard(ecocashNumber)}
                       className="bg-green-100 hover:bg-green-200 px-2 py-1 rounded font-mono text-green-800 cursor-pointer transition-colors"
                       title="Click to copy WhatsApp number"
                     >
-                      078091294
+                      {ecocashNumber}
                     </button>
                     , including your account email
                   </li>
@@ -114,7 +117,7 @@ export default function PaymentPage() {
           </Tabs>
         </CardContent>
         <CardFooter className="flex flex-col items-start">
-          <p className="text-sm text-muted-foreground">For any issues, contact support@example.com</p>
+          <p className="text-sm text-muted-foreground">For any issues, contact {supportEmail}</p>
         </CardFooter>
       </Card>
     </div>

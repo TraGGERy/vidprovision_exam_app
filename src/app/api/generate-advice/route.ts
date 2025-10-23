@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST(request: NextRequest) {
   try {
     const { 
@@ -64,6 +59,16 @@ Correct answer: ${correctAnswer}
 Student's answer: ${userAnswer}
 
 Please provide a helpful explanation about this driving rule or situation.`;
+
+    // Initialize OpenAI client
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'OPENAI_API_KEY not configured' },
+        { status: 500 }
+      );
+    }
+    const openai = new OpenAI({ apiKey });
 
     // Call OpenAI API
     const completion = await openai.chat.completions.create({

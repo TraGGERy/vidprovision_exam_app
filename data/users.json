@@ -1,0 +1,76 @@
+{
+  "users": [
+    {
+      "id": "user_001",
+      "email": "john.doe@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "subscription": {
+        "isActive": true,
+        "plan": "premium",
+        "startDate": "2024-01-15T10:30:00Z",
+        "endDate": "2024-02-15T10:30:00Z",
+        "paymentMethod": "ecocash",
+        "amount": 2.00,
+        "currency": "USD"
+      },
+      "usage": {
+        "dailyAttempts": 0,
+        "lastAttemptDate": "2024-01-20",
+        "totalAttempts": 45
+      },
+      "status": "active"
+    },
+    {
+      "id": "user_002",
+      "email": "jane.smith@example.com",
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "createdAt": "2024-01-18T14:20:00Z",
+      "subscription": {
+        "isActive": false,
+        "plan": "free",
+        "startDate": null,
+        "endDate": null,
+        "paymentMethod": null,
+        "amount": 0,
+        "currency": "USD"
+      },
+      "usage": {
+        "dailyAttempts": 2,
+        "lastAttemptDate": "2024-01-21",
+        "totalAttempts": 8
+      },
+      "status": "active"
+    },
+    {
+      "id": "user_003",
+      "email": "mike.wilson@example.com",
+      "firstName": "Mike",
+      "lastName": "Wilson",
+      "createdAt": "2024-01-10T09:15:00Z",
+      "subscription": {
+        "isActive": true,
+        "plan": "premium",
+        "startDate": "2024-01-10T09:15:00Z",
+        "endDate": "2024-02-10T09:15:00Z",
+        "paymentMethod": "mastercard",
+        "amount": 2.00,
+        "currency": "USD"
+      },
+      "usage": {
+        "dailyAttempts": 1,
+        "lastAttemptDate": "2024-01-21",
+        "totalAttempts": 120
+      },
+      "status": "active"
+    }
+  ],
+  "metadata": {
+    "lastUpdated": "2024-01-21T12:00:00Z",
+    "totalUsers": 3,
+    "activeSubscriptions": 2,
+    "version": "1.0"
+  }
+}

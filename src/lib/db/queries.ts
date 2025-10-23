@@ -258,3 +258,43 @@ export async function forceEndActiveSessions(userId: number): Promise<void> {
     await endTestSession(session.id);
   }
 }
+
+export async function incrementUserAttempts(userId: number): Promise<boolean> {
+  const limits = await canUserStartTest(userId);
+  if (!limits.canStart) return false;
+  await updateDailyTestCount(userId, 0);
+  return true;
+}
+
+export async function activateSubscriptionByAdmin(userId: number, paymentMethod: string = 'admin'): Promise<User> {
+  const startDate = new Date();
+  const endDate = new Date(startDate);
+  endDate.setDate(startDate.getDate() + 30);
+  const [updated] = await db
+    .update(users)
+    .set({
+      subscriptionType: 'premium',
+      subscriptionActive: true,
+      subscriptionStartDate: startDate,
+      subscriptionEndDate: endDate,
+      paymentMethod,
+      amount: '2.00',
+      currency: 'USD',
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+    .returning();
+  return updated;
+}
+
+export async function getUserUsageSummary(userId: number): Promise<{ testsToday: number; remainingTests: number; lastAttemptDate: string | null; totalAttempts: number; }> {
+  const today = new Date().toISOString().split('T')[0];
+  const todayRow = await db.select().from(userTests).where(and(eq(userTests.userId, userId), eq(userTests.testDate, today))).limit(1);
+  const testsToday = todayRow.length > 0 ? todayRow[0].testCount : 0;
+  const remainingTests = Math.max(0, FREE_DAILY_TEST_LIMIT - testsToday);
+  const latestRow = await db.select().from(userTests).where(eq(userTests.userId, userId)).orderBy(desc(userTests.testDate)).limit(1);
+  const lastAttemptDate = latestRow.length > 0 ? latestRow[0].testDate : null;
+  const totalAgg = await db.select({ sum: sql<number>`COALESCE(SUM(${userTests.testCount}), 0)` }).from(userTests).where(eq(userTests.userId, userId));
+  const totalAttempts = totalAgg[0]?.sum ?? 0;
+  return { testsToday, remainingTests, lastAttemptDate, totalAttempts };
+}

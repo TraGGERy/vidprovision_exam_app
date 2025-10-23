@@ -1,10 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { clerkClient } from '@clerk/nextjs/server';
-import type { ClerkClient, User as ClerkUser } from '@clerk/nextjs/server';
 import { createOrGetUser } from '@/lib/db/queries';
 
-function isPaginatedUsersList(list: unknown): list is { data: ClerkUser[] } {
+// Minimal local Clerk types to avoid importing unavailable types
+type ClerkEmailAddress = { emailAddress: string };
+type MinimalClerkUser = {
+  id: string;
+  emailAddresses?: ClerkEmailAddress[];
+  firstName?: string | null;
+  lastName?: string | null;
+  username?: string | null;
+};
+
+type PaginatedList<T> = { data: T[] };
+
+type MinimalClerkClient = {
+  users: {
+    getUserList: (params: { limit?: number }) => Promise<MinimalClerkUser[] | PaginatedList<MinimalClerkUser>>;
+  };
+};
+
+function isPaginatedUsersList(list: unknown): list is PaginatedList<MinimalClerkUser> {
   return (
     typeof list === 'object' &&
     list !== null &&
@@ -27,17 +44,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    let client: ClerkClient;
+    let client: MinimalClerkClient;
     if (typeof clerkClient === 'function') {
-      client = await (clerkClient as unknown as () => Promise<ClerkClient>)();
+      client = (await (clerkClient as unknown as () => Promise<unknown>)()) as MinimalClerkClient;
     } else {
-      client = clerkClient as ClerkClient;
+      client = clerkClient as unknown as MinimalClerkClient;
     }
 
-    const usersListUnknown = (await client.users.getUserList({ limit: 100 })) as unknown;
-    let clerkUsers: ClerkUser[] = [];
+    const usersListUnknown = await client.users.getUserList({ limit: 100 });
+    let clerkUsers: MinimalClerkUser[] = [];
     if (Array.isArray(usersListUnknown)) {
-      clerkUsers = usersListUnknown as ClerkUser[];
+      clerkUsers = usersListUnknown as MinimalClerkUser[];
     } else if (isPaginatedUsersList(usersListUnknown)) {
       clerkUsers = usersListUnknown.data;
     }

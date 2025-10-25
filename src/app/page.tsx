@@ -11,6 +11,8 @@ import SplashScreen from "../components/SplashScreen";
 import LeaderboardTable from "../components/LeaderboardTable";
 import Header from "../components/Header";
 import { HeaderAd, ContentAd } from "../components/AdSenseAd";
+import { SubscriptionStatus, CompactSubscriptionStatus, AttemptsCounter } from "@/components/SubscriptionStatus";
+import { useSubscriptionContext } from "@/contexts/SubscriptionContext";
 import { Question, getAllQuestions, getQuestionsByTest, getAllTestIds, shuffle } from "../utils/questionUtils";
 import { 
   updateQuestionPerformance, 
@@ -49,10 +51,17 @@ export default function DrivingQuizApp() {
   const { isLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
   const router = useRouter();
+  
+  // Subscription context - replaces Clerk metadata usage
+  const { subscriptionData, loading: subscriptionLoading, isUnlimited, isFree } = useSubscriptionContext();
+  
+  // Legacy metadata for backward compatibility (fallback only)
   const metadata = user?.unsafeMetadata || {};
-  const subscribed = metadata.subscribed === true;
   const attempts = (metadata.attempts as number) || 0;
-  const dailyAttempts = (metadata.dailyAttempts as number) || 0;
+  
+  // Use subscription data instead of Clerk metadata
+  const subscribed = isUnlimited;
+  const dailyAttempts = subscriptionData?.usage?.dailyAttempts || 0;
 
   // Register service worker for PWA functionality
   useEffect(() => {
@@ -626,10 +635,11 @@ export default function DrivingQuizApp() {
             </div>
           )}
 
-          {!subscribed && attempts >= 3 && (
+          {/* Show attempts exhausted message for free users */}
+          {isFree && dailyAttempts >= 3 && (
             <div className="mb-6 p-4 bg-red-900 border border-red-700 rounded-lg text-center">
-              <h3 className="text-lg font-bold text-red-100 mb-2">Free Attempts Exhausted</h3>
-              <p className="text-red-200 mb-4">You&apos;ve used all 3 free attempts. Subscribe now for unlimited quiz access!</p>
+              <h3 className="text-lg font-bold text-red-100 mb-2">Daily Attempts Exhausted</h3>
+              <p className="text-red-200 mb-4">You&apos;ve used all 3 daily attempts. Subscribe now for unlimited quiz access!</p>
               <Link href="/payment">
                 <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                   Subscribe Now
@@ -1123,11 +1133,11 @@ export default function DrivingQuizApp() {
             </div>
             
             <div className="text-center">
-              {!subscribed && (
-                <div className="mb-4 p-3 bg-yellow-900 text-yellow-100 rounded-lg text-sm">
-                  Daily free attempts: {dailyAttempts}/3 used today. Subscribe for unlimited access.
-                </div>
-              )}
+              {/* Subscription Status Display */}
+              <div className="mb-4">
+                <SubscriptionStatus />
+              </div>
+              
               <button
                 onClick={() => startQuiz()}
                 className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2 sm:py-3 px-5 sm:px-8 rounded-lg text-sm sm:text-lg transition-colors duration-200 shadow-md hover:shadow-lg touch-manipulation border border-blue-500 w-full sm:w-auto"

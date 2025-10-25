@@ -72,10 +72,10 @@ export const useSubscription = () => {
   }, [fetchSubscriptionStatus]);
 
   // Helper functions
-  const isUnlimited = subscriptionData?.subscriptionType !== 'free' && subscriptionData?.subscriptionActive;
-  const isPremium = subscriptionData?.subscriptionType === 'premium' && subscriptionData?.subscriptionActive;
-  const isLifetime = subscriptionData?.subscriptionType === 'lifetime' && subscriptionData?.subscriptionActive;
-  const isFree = subscriptionData?.subscriptionType === 'free' || !subscriptionData?.subscriptionActive;
+  const isUnlimited = subscriptionData?.subscriptionType !== 'free' && subscriptionData?.subscriptionActive === true;
+  const isPremium = subscriptionData?.subscriptionType === 'premium' && subscriptionData?.subscriptionActive === true;
+  const isLifetime = subscriptionData?.subscriptionType === 'lifetime' && subscriptionData?.subscriptionActive === true;
+  const isFree = subscriptionData?.subscriptionType === 'free' || subscriptionData?.subscriptionActive !== true;
 
   return {
     subscriptionData,

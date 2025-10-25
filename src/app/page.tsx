@@ -11,7 +11,7 @@ import SplashScreen from "../components/SplashScreen";
 import LeaderboardTable from "../components/LeaderboardTable";
 import Header from "../components/Header";
 import { HeaderAd, ContentAd } from "../components/AdSenseAd";
-import { SubscriptionStatus, CompactSubscriptionStatus, AttemptsCounter } from "@/components/SubscriptionStatus";
+import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { useSubscriptionContext } from "@/contexts/SubscriptionContext";
 import { Question, getAllQuestions, getQuestionsByTest, getAllTestIds, shuffle } from "../utils/questionUtils";
 import { 
@@ -53,7 +53,7 @@ export default function DrivingQuizApp() {
   const router = useRouter();
   
   // Subscription context - replaces Clerk metadata usage
-  const { subscriptionData, loading: subscriptionLoading, isUnlimited, isFree } = useSubscriptionContext();
+  const { subscriptionData, isUnlimited, isFree } = useSubscriptionContext();
   
   // Legacy metadata for backward compatibility (fallback only)
   const metadata = user?.unsafeMetadata || {};
@@ -667,7 +667,7 @@ export default function DrivingQuizApp() {
       );
     }
     return null;
-  }, [score, questions.length, quizConfig.focusOnZimbabweLaws, getScoreColor, getScoreMessage, startQuiz, stage, subscribed, attempts]);
+  }, [score, questions.length, quizConfig.focusOnZimbabweLaws, getScoreColor, getScoreMessage, startQuiz, stage, subscribed, attempts, dailyAttempts, isFree]);
 
   // Memoized floating info icon
   const floatingInfoIcon = useMemo(() => {

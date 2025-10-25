@@ -4,7 +4,7 @@ import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
 
 // Main subscription status component for detailed display
 export const SubscriptionStatus: React.FC = () => {
-  const { subscriptionData, loading, error, isUnlimited, isPremium, isLifetime, isFree } = useSubscriptionContext();
+  const { subscriptionData, loading, error, isUnlimited, isLifetime } = useSubscriptionContext();
 
   if (loading) {
     return (
@@ -69,7 +69,7 @@ export const SubscriptionStatus: React.FC = () => {
 
 // Compact version for smaller spaces
 export const CompactSubscriptionStatus: React.FC = () => {
-  const { subscriptionData, loading, error, isUnlimited, isFree } = useSubscriptionContext();
+  const { subscriptionData, loading, error, isUnlimited } = useSubscriptionContext();
 
   if (loading) {
     return (

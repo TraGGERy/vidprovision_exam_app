@@ -43,17 +43,13 @@ export async function GET() {
     const limits = await canUserStartTest(dbUser.id);
     const usageSummary = await getUserUsageSummary(dbUser.id);
 
-    const response = {
-      user: {
-        id: dbUser.id,
-        email: dbUser.email,
-        name: dbUser.name,
-        subscriptionType: dbUser.subscriptionType,
-      },
-      limits: {
-        canStartTest: limits.canStart,
-        subscriptionType: limits.subscriptionType,
-        dailyLimit: limits.subscriptionType === 'free' ? (typeof limits.remainingTests === 'number' && limits.remainingTests >= 0 ? limits.remainingTests + usageSummary.testsToday : -1) : -1,
+    // Map to SubscriptionData format expected by the frontend
+    const subscriptionData = {
+      subscriptionType: limits.subscriptionType as 'free' | 'premium' | 'lifetime',
+      subscriptionActive: limits.subscriptionType !== 'free' && limits.canStart,
+      canStartTest: limits.canStart,
+      usage: {
+        dailyLimit: limits.subscriptionType === 'free' ? (typeof limits.remainingTests === 'number' && limits.remainingTests >= 0 ? limits.remainingTests + usageSummary.testsToday : 3) : -1,
         dailyAttempts: usageSummary.testsToday,
         remainingAttempts: limits.remainingTests,
         lastAttemptDate: usageSummary.lastAttemptDate,
@@ -61,10 +57,16 @@ export async function GET() {
       }
     };
 
+    const response = {
+      success: true,
+      data: subscriptionData
+    };
+
     logger.info(`Status check successful for user: ${userId}`, {
       canStartTest: limits.canStart,
       subscriptionType: limits.subscriptionType,
-      remainingAttempts: limits.remainingTests
+      remainingAttempts: limits.remainingTests,
+      subscriptionActive: subscriptionData.subscriptionActive
     });
 
     return NextResponse.json(response);

@@ -31,7 +31,8 @@ export async function GET() {
     logger.info(`Checking status for user: ${userId}`);
 
     // Get Clerk user profile to seed DB record
-    const clerkUser = await clerkClient.users.getUser(userId);
+    const clerk = await clerkClient();
+    const clerkUser = await clerk.users.getUser(userId);
     const email = clerkUser.emailAddresses?.[0]?.emailAddress ?? `${userId}@example.com`;
     const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') || clerkUser.username || 'User';
 
@@ -107,7 +108,8 @@ export async function POST(request: NextRequest) {
     logger.info(`Processing action: ${action} for user: ${userId}`);
 
     // Get Clerk user and ensure DB user exists
-    const clerkUser = await clerkClient.users.getUser(userId);
+    const clerk = await clerkClient();
+    const clerkUser = await clerk.users.getUser(userId);
     const email = clerkUser.emailAddresses?.[0]?.emailAddress ?? `${userId}@example.com`;
     const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') || clerkUser.username || 'User';
     const dbUser = await createOrGetUser(userId, email, name);

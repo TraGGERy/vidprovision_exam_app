@@ -10,6 +10,9 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  // Ignore build and vendor directories
+  { ignores: ["**/.next/**", "**/node_modules/**", "**/dist/**"] },
+  // Next.js and TypeScript recommended configs
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];
 

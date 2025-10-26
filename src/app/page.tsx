@@ -54,9 +54,6 @@ export default function DrivingQuizApp() {
   
   // Subscription context - replaces Clerk metadata usage
   const { subscriptionData, isUnlimited, isFree } = useSubscriptionContext();
-  
-  // Legacy metadata for backward compatibility (fallback only)
-  const metadata = user?.unsafeMetadata || {};
 
   // Register service worker for PWA functionality
   useEffect(() => {

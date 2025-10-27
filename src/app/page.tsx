@@ -120,7 +120,7 @@ export default function DrivingQuizApp() {
     if (!isUnlimited) {
       // For free users, check daily limits using subscription data
       const currentDailyAttempts = subscriptionData?.usage?.dailyAttempts || 0;
-      const maxDailyAttempts = subscriptionData?.usage?.maxDailyAttempts || 3;
+      const maxDailyAttempts = subscriptionData?.usage?.dailyLimit === -1 ? Infinity : (subscriptionData?.usage?.dailyLimit || 3);
       
       // Check if user has already reached their daily limit
       if (currentDailyAttempts >= maxDailyAttempts) {
@@ -612,10 +612,10 @@ export default function DrivingQuizApp() {
           )}
 
           {/* Show attempts exhausted message for free users */}
-          {isFree && (subscriptionData?.usage?.dailyAttempts || 0) >= (subscriptionData?.usage?.maxDailyAttempts || 3) && (
+          {isFree && (subscriptionData?.usage?.dailyAttempts || 0) >= (subscriptionData?.usage?.dailyLimit || 3) && (
             <div className="bg-red-900/50 border border-red-700 rounded-lg p-4 mb-4">
               <h3 className="text-lg font-bold text-red-100 mb-2">Daily Attempts Exhausted</h3>
-              <p className="text-red-200 mb-4">You&apos;ve used all {subscriptionData?.usage?.maxDailyAttempts || 3} daily attempts. Subscribe now for unlimited quiz access!</p>
+              <p className="text-red-200 mb-4">You&apos;ve used all {subscriptionData?.usage?.dailyLimit || 3} daily attempts. Subscribe now for unlimited quiz access!</p>
               <Link href="/payment">
                 <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                   Subscribe Now

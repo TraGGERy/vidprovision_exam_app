@@ -113,7 +113,7 @@ export default function DrivingQuizApp() {
 
   // Timer effect is now consolidated in a single useEffect below
 
-  const startQuiz = useMemo(() => async (config: QuizConfig = quizConfig) => {
+  const startQuiz = useCallback(async (config: QuizConfig = quizConfig) => {
     if (!user) return;
     
     // Use the new subscription system instead of Clerk metadata
@@ -220,7 +220,7 @@ export default function DrivingQuizApp() {
     
     // setQuizStartTime(new Date()); // Removed assignment to unused variable
     setStage('quiz');
-  }, [availableQuestions, quizConfig, router, user]);
+  }, [availableQuestions, quizConfig, router, user, subscriptionData, isUnlimited, refreshSubscription]);
 
   const handleAnswerSelect = useMemo(() => (option: string) => {
     // Prevent multiple selections or clicks during explanation

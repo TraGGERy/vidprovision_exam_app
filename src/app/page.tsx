@@ -53,7 +53,7 @@ export default function DrivingQuizApp() {
   const router = useRouter();
   
   // Subscription context - replaces Clerk metadata usage
-  const { subscriptionData, isUnlimited, isFree } = useSubscriptionContext();
+  const { subscriptionData, isUnlimited, isFree, refreshSubscription } = useSubscriptionContext();
 
   // Register service worker for PWA functionality
   useEffect(() => {
@@ -1116,7 +1116,12 @@ export default function DrivingQuizApp() {
               
               <button
                 onClick={() => startQuiz()}
-                className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2 sm:py-3 px-5 sm:px-8 rounded-lg text-sm sm:text-lg transition-colors duration-200 shadow-md hover:shadow-lg touch-manipulation border border-blue-500 w-full sm:w-auto"
+                disabled={
+                  isFree &&
+                  (subscriptionData?.usage?.dailyLimit ?? 3) !== -1 &&
+                  (subscriptionData?.usage?.dailyAttempts || 0) >= (subscriptionData?.usage?.dailyLimit || 3)
+                }
+                className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2 sm:py-3 px-5 sm:px-8 rounded-lg text-sm sm:text-lg transition-colors duration-200 shadow-md hover:shadow-lg touch-manipulation border border-blue-500 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
               >
                 Start Quiz
               </button>

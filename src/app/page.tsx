@@ -13,6 +13,7 @@ import Header from "../components/Header";
 import { HeaderAd, ContentAd } from "../components/AdSenseAd";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { useSubscriptionContext } from "@/contexts/SubscriptionContext";
+import { useTestSession } from "@/hooks/useTestSession";
 import { Question, getAllQuestions, getQuestionsByTest, getAllTestIds, shuffle } from "../utils/questionUtils";
 import { 
   updateQuestionPerformance, 
@@ -54,6 +55,8 @@ export default function DrivingQuizApp() {
   
   // Subscription context - replaces Clerk metadata usage
   const { subscriptionData, isUnlimited, isFree, refreshSubscription } = useSubscriptionContext();
+  // Test session management (DB-backed start/end)
+  const { startTest, endTest, activeSession } = useTestSession();
 
   // Register service worker for PWA functionality
   useEffect(() => {
@@ -130,6 +133,13 @@ export default function DrivingQuizApp() {
       
       // For free users, we'll let the backend handle attempt counting via the API
       // The subscription system will automatically track attempts
+    }
+
+    // Create a DB-backed test session (enforces server-side limits)
+    const session = await startTest();
+    if (!session) {
+      // Server denied start (e.g., exceeded limit). Stop here.
+      return;
     }
     // Get questions based on configuration
     let selectedQuestions: Question[] = [];
@@ -220,7 +230,7 @@ export default function DrivingQuizApp() {
     
     // setQuizStartTime(new Date()); // Removed assignment to unused variable
     setStage('quiz');
-  }, [availableQuestions, quizConfig, router, user, subscriptionData, isUnlimited, refreshSubscription]);
+  }, [availableQuestions, quizConfig, router, user, subscriptionData, isUnlimited, refreshSubscription, startTest]);
 
   const handleAnswerSelect = useMemo(() => (option: string) => {
     // Prevent multiple selections or clicks during explanation
@@ -328,6 +338,23 @@ export default function DrivingQuizApp() {
       }
     };
   }, [totalTimeLeft, stage, quizConfig.mode]);
+
+  // End the active test session when results are shown
+  useEffect(() => {
+    const concludeSession = async () => {
+      if (stage === 'result' && activeSession) {
+        try {
+          await endTest(activeSession.id);
+        } catch (e) {
+          console.error('Failed to end test session', e);
+        } finally {
+          // Ensure subscription usage reflects the new attempt count
+          await refreshSubscription();
+        }
+      }
+    };
+    concludeSession();
+  }, [stage, activeSession, endTest, refreshSubscription]);
 
   const nextQuestion = useMemo(() => () => {
     // Reset state for the next question

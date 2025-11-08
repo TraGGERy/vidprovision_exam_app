@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -42,9 +43,20 @@ function PaymentForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <CardElement className="border p-3 rounded-md" />
-      {error && <p className="text-red-500">{error}</p>}
-      <Button type="submit" disabled={!stripe || processing} className="w-full">
+      <CardElement
+        className="border border-gray-700 bg-gray-900 p-3 rounded-md"
+        options={{
+          style: {
+            base: {
+              color: '#ffffff',
+              '::placeholder': { color: '#9CA3AF' },
+              fontSize: '16px',
+            },
+          },
+        }}
+      />
+      {error && <p className="text-red-400">{error}</p>}
+      <Button type="submit" disabled={!stripe || processing} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
         {processing ? 'Processing...' : 'Pay $2 USD'}
       </Button>
     </form>
@@ -60,66 +72,73 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-2xl">
-      <Card>
-        <CardHeader>
-          <CardTitle>Subscribe to Full Access</CardTitle>
-          <CardDescription>Monthly subscription: $2 USD</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4">Choose your payment method to unlock unlimited test attempts and full features.</p>
-          <Tabs defaultValue="ecocash" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="ecocash">EcoCash</TabsTrigger>
-              <TabsTrigger value="mastercard">Mastercard</TabsTrigger>
-            </TabsList>
-            <TabsContent value="ecocash">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <p>Pay to EcoCash number:</p>
-                  <button
-                    onClick={() => copyToClipboard(ecocashNumber)}
-                    className="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded font-mono text-blue-800 cursor-pointer transition-colors"
-                    title="Click to copy"
-                  >
-                    {ecocashNumber}
-                  </button>
-                </div>
-                <p>Amount: <strong>$2 USD</strong></p>
-                <p>Instructions:</p>
-                <ol className="list-decimal pl-5 space-y-2">
-                  <li>Make payment via EcoCash to <span className="font-mono font-semibold">{ecocashNumber}</span></li>
-                  <li>Take a screenshot or get transaction confirmation</li>
-                  <li>
-                    Send the payment confirmation via WhatsApp to{' '}
+    <div className="min-h-screen bg-black text-white">
+      <div className="container mx-auto p-4 max-w-2xl">
+        <div className="mb-4">
+          <Link href="/">
+            <Button className="bg-gray-800 hover:bg-gray-700 text-white">Back Home</Button>
+          </Link>
+        </div>
+        <Card className="bg-gray-900 border border-gray-700 text-white">
+          <CardHeader>
+            <CardTitle className="text-white">Subscribe to Full Access</CardTitle>
+            <CardDescription className="text-gray-300">Monthly subscription: $2 USD</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4 text-gray-200">Choose your payment method to unlock unlimited test attempts and full features.</p>
+            <Tabs defaultValue="ecocash" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-gray-800 text-white rounded-lg">
+                <TabsTrigger value="ecocash" className="data-[state=active]:bg-gray-700 data-[state=active]:text-white">EcoCash</TabsTrigger>
+                <TabsTrigger value="mastercard" className="data-[state=active]:bg-gray-700 data-[state=active]:text-white">Mastercard</TabsTrigger>
+              </TabsList>
+              <TabsContent value="ecocash">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <p className="text-gray-200">Pay to EcoCash number:</p>
                     <button
                       onClick={() => copyToClipboard(ecocashNumber)}
-                      className="bg-green-100 hover:bg-green-200 px-2 py-1 rounded font-mono text-green-800 cursor-pointer transition-colors"
-                      title="Click to copy WhatsApp number"
+                      className="bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded font-mono text-white border border-gray-600 cursor-pointer transition-colors"
+                      title="Click to copy"
                     >
                       {ecocashNumber}
                     </button>
-                    , including your account email
-                  </li>
-                  <li>Our admin will review and activate your subscription within 24 hours</li>
-                </ol>
-              </div>
-            </TabsContent>
-            <TabsContent value="mastercard">
-              <div className="space-y-4">
-                <p>Use your Mastercard to pay securely.</p>
-                <Elements stripe={stripePromise}>
-                  <PaymentForm />
-                </Elements>
-                <p className="text-sm text-muted-foreground">Your subscription will be activated automatically upon successful payment.</p>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-        <CardFooter className="flex flex-col items-start">
-          <p className="text-sm text-muted-foreground">For any issues, contact {supportEmail}</p>
-        </CardFooter>
-      </Card>
+                  </div>
+                  <p className="text-gray-200">Amount: <strong className="text-white">$2 USD</strong></p>
+                  <p className="text-gray-200">Instructions:</p>
+                  <ol className="list-decimal pl-5 space-y-2 text-gray-300">
+                    <li>Make payment via EcoCash to <span className="font-mono font-semibold text-white">{ecocashNumber}</span></li>
+                    <li>Take a screenshot or get transaction confirmation</li>
+                    <li>
+                      Send the payment confirmation via WhatsApp to{' '}
+                      <button
+                        onClick={() => copyToClipboard(ecocashNumber)}
+                        className="bg-gray-800 hover:bg-gray-700 px-2 py-1 rounded font-mono text-green-300 border border-gray-600 cursor-pointer transition-colors"
+                        title="Click to copy WhatsApp number"
+                      >
+                        {ecocashNumber}
+                      </button>
+                      , including your account email
+                    </li>
+                    <li>Our admin will review and activate your subscription within 24 hours</li>
+                  </ol>
+                </div>
+              </TabsContent>
+              <TabsContent value="mastercard">
+                <div className="space-y-4">
+                  <p className="text-gray-200">Use your Mastercard to pay securely.</p>
+                  <Elements stripe={stripePromise}>
+                    <PaymentForm />
+                  </Elements>
+                  <p className="text-sm text-gray-400">Your subscription will be activated automatically upon successful payment.</p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+          <CardFooter className="flex flex-col items-start">
+            <p className="text-sm text-gray-400">For any issues, contact {supportEmail}</p>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }
